@@ -3,7 +3,8 @@ import { PDFDocument } from 'pdf-lib';
 export interface PDFFileWithPages {
   file: File;
   selectedPages: number[];
-  isSinglePage?: boolean;
+  isSinglePage: boolean;
+  fileSize: number;
 }
 
 export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Array> {
