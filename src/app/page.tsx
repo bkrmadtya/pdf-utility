@@ -170,12 +170,22 @@ export default function Home() {
   return (
     <main className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-gray-900">PDF Merger</h1>
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900">PDF Merger</h1>
+          <p className="mt-2 text-gray-600">
+            Combine multiple PDF files into one document. Select specific pages, preview before
+            merging, and download instantly.
+          </p>
+        </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <section className="bg-white rounded-lg shadow-sm p-6" aria-label="File Selection">
             <div className="mb-6">
+              <label htmlFor="file-input" className="sr-only">
+                Select PDF files
+              </label>
               <input
+                id="file-input"
                 type="file"
                 accept=".pdf"
                 multiple
@@ -187,13 +197,14 @@ export default function Home() {
                   file:bg-blue-600 file:text-white
                   hover:file:bg-blue-700
                   cursor-pointer"
+                aria-label="Select PDF files to merge"
               />
             </div>
 
             {files.length > 0 && (
               <div className="mb-6">
                 <h2 className="text-xl font-semibold mb-4 text-gray-900">Selected Files:</h2>
-                <ul className="space-y-4">
+                <ul className="space-y-4" role="list">
                   {files.map((fileData, index) => (
                     <li key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                       <div className="flex items-center justify-between mb-3">
@@ -207,6 +218,7 @@ export default function Home() {
                           <button
                             onClick={() => setSelectedFileIndex(index)}
                             className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                            aria-label={`Preview ${fileData.file.name}`}
                           >
                             Preview
                           </button>
@@ -214,6 +226,7 @@ export default function Home() {
                         <button
                           onClick={() => removeFile(index)}
                           className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
+                          aria-label={`Remove ${fileData.file.name}`}
                         >
                           Remove
                         </button>
@@ -227,19 +240,25 @@ export default function Home() {
                               <button
                                 onClick={() => selectAllPages(index)}
                                 className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+                                aria-label={`Select all pages in ${fileData.file.name}`}
                               >
                                 Select All
                               </button>
                               <button
                                 onClick={() => clearPageSelection(index)}
                                 className="text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors"
+                                aria-label={`Clear page selection in ${fileData.file.name}`}
                               >
                                 Clear
                               </button>
                             </>
                           )}
                         </div>
-                        <div className="flex flex-wrap gap-1">
+                        <div
+                          className="flex flex-wrap gap-1"
+                          role="group"
+                          aria-label={`Page selection for ${fileData.file.name}`}
+                        >
                           {Array.from({ length: pageCounts[fileData.file.name] || 0 }, (_, i) => (
                             <button
                               key={i}
@@ -254,6 +273,8 @@ export default function Home() {
                                   : ""
                               }`}
                               disabled={isSinglePage(fileData.file.name)}
+                              aria-label={`Select page ${i + 1} of ${fileData.file.name}`}
+                              aria-pressed={fileData.selectedPages.includes(i)}
                             >
                               {i + 1}
                             </button>
@@ -283,12 +304,13 @@ export default function Home() {
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
               }`}
+              aria-label="Merge selected PDF files"
             >
               {isMerging ? "Merging..." : "Merge PDFs"}
             </button>
-          </div>
+          </section>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <section className="bg-white rounded-lg shadow-sm p-6" aria-label="Preview">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Preview</h2>
@@ -301,18 +323,23 @@ export default function Home() {
               {mergedPreviewUrl && (
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">File name:</span>
+                    <label htmlFor="merged-filename" className="text-sm font-medium text-gray-700">
+                      File name:
+                    </label>
                     <input
+                      id="merged-filename"
                       type="text"
                       value={mergedFileName}
                       onChange={(e) => setMergedFileName(e.target.value)}
                       className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="merged.pdf"
+                      aria-label="Merged PDF file name"
                     />
                   </div>
                   <button
                     onClick={handleDownload}
                     className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm shadow-sm transition-colors"
+                    aria-label="Download merged PDF"
                   >
                     Download Merged PDF
                   </button>
@@ -324,14 +351,14 @@ export default function Home() {
                 <iframe
                   src={previewFile(files[selectedFileIndex].file)}
                   className="w-full h-full border-0 rounded-lg"
-                  title="PDF Preview"
+                  title={`Preview of ${files[selectedFileIndex].file.name}`}
                 />
               )}
               {mergedPreviewUrl && selectedFileIndex === null && (
                 <iframe
                   src={mergedPreviewUrl}
                   className="w-full h-full border-0 rounded-lg"
-                  title="Merged PDF Preview"
+                  title="Preview of merged PDF"
                 />
               )}
               {!selectedFileIndex && !mergedPreviewUrl && (
@@ -340,7 +367,7 @@ export default function Home() {
                 </div>
               )}
             </div>
-          </div>
+          </section>
         </div>
       </div>
     </main>
