@@ -236,7 +236,7 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-6">
+            <section className="mb-6">
               <Label htmlFor="file-input" className="sr-only">
                 Select PDF files
               </Label>
@@ -248,18 +248,18 @@ export default function Home() {
                 onChange={handleFileChange}
                 className="cursor-pointer"
               />
-            </div>
+            </section>
 
             {files.length > 0 && (
               <>
                 <Separator className="my-6 bg-gray-700" />
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
+                <section className="mb-6">
+                  <header className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-gray-100">Selected Files:</h2>
                     <Badge variant="outline" className="border-gray-700 text-gray-200">
                       {files.length} file{files.length > 1 ? "s" : ""}
                     </Badge>
-                  </div>
+                  </header>
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -287,7 +287,7 @@ export default function Home() {
                       </ul>
                     </SortableContext>
                   </DndContext>
-                </div>
+                </section>
               </>
             )}
 

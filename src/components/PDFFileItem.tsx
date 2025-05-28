@@ -41,23 +41,24 @@ const PDFFileItem = ({
   };
 
   return (
-    <li
+    <article
       ref={setNodeRef}
       style={style}
       className={`bg-gray-800/50 p-4 rounded-lg border border-gray-700 ${
         isDragging ? "cursor-grabbing" : ""
       }`}
     >
-      <div className="flex items-center justify-between mb-3">
+      <header className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div
+          <button
             {...attributes}
             {...listeners}
             className="cursor-grab hover:text-gray-300 transition-colors"
+            aria-label="Drag to reorder"
           >
             <GripVertical className="h-5 w-5" />
-          </div>
-          <span className="text-sm font-medium text-gray-100">{fileData.file.name}</span>
+          </button>
+          <h3 className="text-sm font-medium text-gray-100">{fileData.file.name}</h3>
           <Badge variant="secondary" className="text-xs bg-gray-700 text-gray-200">
             {formatFileSize(fileSize)}
           </Badge>
@@ -67,16 +68,17 @@ const PDFFileItem = ({
           onClick={() => onRemove(index)}
           className="text-sm text-red-400 hover:text-red-300 p-1 h-auto cursor-pointer"
           title="Remove file"
+          aria-label="Remove file"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-      </div>
+      </header>
 
-      <div className="mt-4">
+      <section className="mt-4">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-sm text-gray-400">Select pages:</span>
           {!isSinglePage && (
-            <>
+            <nav className="flex gap-2">
               <Button
                 variant="link"
                 onClick={() => onSelectAllPages(index)}
@@ -91,11 +93,11 @@ const PDFFileItem = ({
               >
                 Clear
               </Button>
-            </>
+            </nav>
           )}
         </div>
 
-        <div className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-gray-400 mb-4">
           {isSinglePage
             ? "Single page document (automatically selected)"
             : fileData.selectedPages.length === 0
@@ -103,14 +105,15 @@ const PDFFileItem = ({
             : `${fileData.selectedPages.length} page${
                 fileData.selectedPages.length === 1 ? "" : "s"
               } selected`}
-        </div>
+        </p>
 
-        {/* Preview section */}
-        <div className="mt-4">
-          <h3 className="text-sm font-medium text-gray-100 mb-2">Preview:</h3>
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
+        <section aria-labelledby="preview-heading">
+          <h4 id="preview-heading" className="text-sm font-medium text-gray-100 mb-2">
+            Preview:
+          </h4>
+          <ul className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1" role="list">
             {Array.from({ length: pageCount }, (_, i) => (
-              <div
+              <li
                 key={i}
                 className={`relative max-w-[150px] cursor-pointer transition-opacity ${
                   !fileData.selectedPages.includes(i) ? "opacity-50" : ""
@@ -118,9 +121,9 @@ const PDFFileItem = ({
                 onClick={() => !isSinglePage && onTogglePageSelection(index, i)}
               >
                 <PDFPreview file={fileData.file} pageNumber={i + 1} />
-                <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                <span className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
                   Page {i + 1}
-                </div>
+                </span>
                 {fileData.selectedPages.includes(i) && (
                   <>
                     <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none" />
@@ -129,12 +132,12 @@ const PDFFileItem = ({
                     </div>
                   </>
                 )}
-              </div>
+              </li>
             ))}
-          </div>
-        </div>
-      </div>
-    </li>
+          </ul>
+        </section>
+      </section>
+    </article>
   );
 };
 

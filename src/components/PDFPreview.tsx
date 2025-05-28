@@ -117,14 +117,21 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
   }, [file, pageNumber, isVisible]);
 
   return (
-    <div ref={containerRef} className="w-full relative min-h-[200px]">
+    <figure ref={containerRef} className="w-full relative">
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg"
+          role="status"
+          aria-label="Loading PDF preview"
+        >
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
         </div>
       )}
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg">
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-red-50 rounded-lg"
+          role="alert"
+        >
           <p className="text-red-600">Error: {error}</p>
         </div>
       )}
@@ -133,8 +140,9 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
         className={`w-full h-auto rounded-lg border bg-white ${
           isLoading ? "opacity-0" : "opacity-100"
         } transition-opacity duration-300`}
+        aria-label={`PDF preview page ${pageNumber}`}
       />
-    </div>
+    </figure>
   );
 });
 
