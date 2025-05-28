@@ -1,10 +1,11 @@
-import { Trash2, Check } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Trash2, Check, GripVertical } from "lucide-react";
 import PDFPreview from "./PDFPreview";
 import { PDFFileWithPages } from "@/utils/pdfMerger";
 import { formatFileSize } from "@/utils/format";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface PDFFileItemProps {
   fileData: PDFFileWithPages;
@@ -29,10 +30,31 @@ const PDFFileItem = ({
   onSelectAllPages,
   onClearPageSelection,
 }: PDFFileItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: index,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   return (
-    <li className="bg-muted/50 p-4 rounded-lg border">
+    <li
+      ref={setNodeRef}
+      style={style}
+      className={`bg-muted/50 p-4 rounded-lg border ${isDragging ? "cursor-grabbing" : ""}`}
+    >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab hover:text-primary transition-colors"
+          >
+            <GripVertical className="h-5 w-5" />
+          </div>
           <span className="text-sm font-medium text-foreground">{fileData.file.name}</span>
           <Badge variant="secondary" className="text-xs">
             {formatFileSize(fileSize)}

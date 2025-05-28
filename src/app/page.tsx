@@ -12,6 +12,21 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import PDFFileItem from "@/components/PDFFileItem";
 import MergedPDFPreview from "@/components/MergedPDFPreview";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 
 // Dynamically import the client-only worker configuration
 import("../lib/pdfjs-worker-client");
@@ -23,6 +38,13 @@ export default function Home() {
   const [mergedBlob, setMergedBlob] = useState<Blob | null>(null);
   const [pageCounts, setPageCounts] = useState<{ [key: string]: number }>({});
   const mergedFileNameRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -178,6 +200,18 @@ export default function Home() {
     });
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setFiles((items) => {
+        const oldIndex = items.findIndex((_, i) => i === active.id);
+        const newIndex = items.findIndex((_, i) => i === over?.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
   return (
     <main className="p-8">
       <div className="max-w-6xl mx-auto">
@@ -226,22 +260,33 @@ export default function Home() {
                       {files.length} file{files.length > 1 ? "s" : ""}
                     </Badge>
                   </div>
-                  <ul className="space-y-6" role="list">
-                    {files.map((fileData, index) => (
-                      <PDFFileItem
-                        key={index}
-                        fileData={fileData}
-                        index={index}
-                        pageCount={pageCounts[fileData.file.name]}
-                        fileSize={fileData.fileSize}
-                        isSinglePage={isSinglePage(fileData.file.name)}
-                        onRemove={removeFile}
-                        onTogglePageSelection={togglePageSelection}
-                        onSelectAllPages={selectAllPages}
-                        onClearPageSelection={clearPageSelection}
-                      />
-                    ))}
-                  </ul>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={files.map((_, index) => index)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <ul className="space-y-6" role="list">
+                        {files.map((fileData, index) => (
+                          <PDFFileItem
+                            key={index}
+                            fileData={fileData}
+                            index={index}
+                            pageCount={pageCounts[fileData.file.name]}
+                            fileSize={fileData.fileSize}
+                            isSinglePage={isSinglePage(fileData.file.name)}
+                            onRemove={removeFile}
+                            onTogglePageSelection={togglePageSelection}
+                            onSelectAllPages={selectAllPages}
+                            onClearPageSelection={clearPageSelection}
+                          />
+                        ))}
+                      </ul>
+                    </SortableContext>
+                  </DndContext>
                 </div>
               </>
             )}
