@@ -252,11 +252,11 @@ export default function Home() {
 
             {files.length > 0 && (
               <>
-                <Separator className="my-6" />
+                <Separator className="my-6 bg-gray-700" />
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-foreground">Selected Files:</h2>
-                    <Badge variant="outline">
+                    <h2 className="text-xl font-semibold text-gray-100">Selected Files:</h2>
+                    <Badge variant="outline" className="border-gray-700 text-gray-200">
                       {files.length} file{files.length > 1 ? "s" : ""}
                     </Badge>
                   </div>

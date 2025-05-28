@@ -44,26 +44,28 @@ const PDFFileItem = ({
     <li
       ref={setNodeRef}
       style={style}
-      className={`bg-muted/50 p-4 rounded-lg border ${isDragging ? "cursor-grabbing" : ""}`}
+      className={`bg-gray-800/50 p-4 rounded-lg border border-gray-700 ${
+        isDragging ? "cursor-grabbing" : ""
+      }`}
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab hover:text-primary transition-colors"
+            className="cursor-grab hover:text-gray-300 transition-colors"
           >
             <GripVertical className="h-5 w-5" />
           </div>
-          <span className="text-sm font-medium text-foreground">{fileData.file.name}</span>
-          <Badge variant="secondary" className="text-xs">
+          <span className="text-sm font-medium text-gray-100">{fileData.file.name}</span>
+          <Badge variant="secondary" className="text-xs bg-gray-700 text-gray-200">
             {formatFileSize(fileSize)}
           </Badge>
         </div>
         <Button
           variant="ghost"
           onClick={() => onRemove(index)}
-          className="text-sm text-destructive hover:text-destructive p-1 h-auto cursor-pointer"
+          className="text-sm text-red-400 hover:text-red-300 p-1 h-auto cursor-pointer"
           title="Remove file"
         >
           <Trash2 className="h-4 w-4" />
@@ -72,20 +74,20 @@ const PDFFileItem = ({
 
       <div className="mt-4">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-sm text-muted-foreground">Select pages:</span>
+          <span className="text-sm text-gray-400">Select pages:</span>
           {!isSinglePage && (
             <>
               <Button
                 variant="link"
                 onClick={() => onSelectAllPages(index)}
-                className="text-xs cursor-pointer"
+                className="text-xs cursor-pointer text-gray-300 hover:text-gray-100"
               >
                 Select All
               </Button>
               <Button
                 variant="link"
                 onClick={() => onClearPageSelection(index)}
-                className="text-xs text-muted-foreground cursor-pointer"
+                className="text-xs text-gray-400 hover:text-gray-300 cursor-pointer"
               >
                 Clear
               </Button>
@@ -93,7 +95,7 @@ const PDFFileItem = ({
           )}
         </div>
 
-        <div className="text-xs text-muted-foreground mb-4">
+        <div className="text-xs text-gray-400 mb-4">
           {isSinglePage
             ? "Single page document (automatically selected)"
             : fileData.selectedPages.length === 0
@@ -105,7 +107,7 @@ const PDFFileItem = ({
 
         {/* Preview section */}
         <div className="mt-4">
-          <h3 className="text-sm font-medium text-foreground mb-2">Preview:</h3>
+          <h3 className="text-sm font-medium text-gray-100 mb-2">Preview:</h3>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
             {Array.from({ length: pageCount }, (_, i) => (
               <div
@@ -116,12 +118,12 @@ const PDFFileItem = ({
                 onClick={() => !isSinglePage && onTogglePageSelection(index, i)}
               >
                 <PDFPreview file={fileData.file} pageNumber={i + 1} />
-                <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded">
+                <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
                   Page {i + 1}
                 </div>
                 {fileData.selectedPages.includes(i) && (
                   <>
-                    <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none" />
+                    <div className="absolute inset-0 border-2 border-blue-500 rounded-lg pointer-events-none" />
                     <div className="absolute top-1 left-1 bg-green-500 rounded-full p-0.5 pointer-events-none">
                       <Check className="h-3 w-3 text-white" />
                     </div>
