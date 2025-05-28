@@ -1,6 +1,7 @@
+import { Trash2, Check } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2 } from "lucide-react";
 import PDFPreview from "./PDFPreview";
 import { PDFFileWithPages } from "@/utils/pdfMerger";
 import { formatFileSize } from "@/utils/format";
@@ -69,20 +70,7 @@ const PDFFileItem = ({
             </>
           )}
         </div>
-        <div className="flex flex-wrap gap-1 mb-4" role="group">
-          {Array.from({ length: pageCount }, (_, i) => (
-            <Button
-              key={i}
-              variant={fileData.selectedPages.includes(i) ? "default" : "outline"}
-              size="sm"
-              onClick={() => onTogglePageSelection(index, i)}
-              disabled={isSinglePage}
-              className={`w-8 h-8 text-xs ${isSinglePage ? "cursor-not-allowed opacity-75" : ""}`}
-            >
-              {i + 1}
-            </Button>
-          ))}
-        </div>
+
         <div className="text-xs text-muted-foreground mb-4">
           {isSinglePage
             ? "Single page document (automatically selected)"
@@ -97,12 +85,26 @@ const PDFFileItem = ({
         <div className="mt-4">
           <h3 className="text-sm font-medium text-foreground mb-2">Preview:</h3>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1">
-            {fileData.selectedPages.map((pageNum) => (
-              <div key={pageNum} className="relative max-w-[150px]">
-                <PDFPreview file={fileData.file} pageNumber={pageNum + 1} />
+            {Array.from({ length: pageCount }, (_, i) => (
+              <div
+                key={i}
+                className={`relative max-w-[150px] cursor-pointer transition-opacity ${
+                  !fileData.selectedPages.includes(i) ? "opacity-50" : ""
+                }`}
+                onClick={() => !isSinglePage && onTogglePageSelection(index, i)}
+              >
+                <PDFPreview file={fileData.file} pageNumber={i + 1} />
                 <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-1.5 py-0.5 rounded">
-                  Page {pageNum + 1}
+                  Page {i + 1}
                 </div>
+                {fileData.selectedPages.includes(i) && (
+                  <>
+                    <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none" />
+                    <div className="absolute top-1 left-1 bg-green-500 rounded-full p-0.5 pointer-events-none">
+                      <Check className="h-3 w-3 text-white" />
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
