@@ -3,6 +3,15 @@
 import { useState } from "react";
 import { mergePDFs, PDFFileWithPages } from "../utils/pdfMerger";
 import { PDFDocument } from "pdf-lib";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
+import { Trash2, Eye } from "lucide-react";
 
 // Helper function to format file size
 const formatFileSize = (bytes: number): string => {
@@ -22,14 +31,21 @@ export default function Home() {
   const [pageCounts, setPageCounts] = useState<{ [key: string]: number }>({});
   const [fileSizes, setFileSizes] = useState<{ [key: string]: number }>({});
   const [mergedFileName, setMergedFileName] = useState("merged.pdf");
+  const [mergeProgress, setMergeProgress] = useState(0);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files).filter((file) => file.type === "application/pdf");
 
+      if (newFiles.length === 0) {
+        toast.error("Please select PDF files only");
+        return;
+      }
+
       // Get page counts and file sizes for new files
       const newPageCounts = { ...pageCounts };
       const newFileSizes = { ...fileSizes };
+
       for (const file of newFiles) {
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await PDFDocument.load(arrayBuffer);
@@ -37,6 +53,7 @@ export default function Home() {
         newPageCounts[file.name] = pageCount;
         newFileSizes[file.name] = file.size;
       }
+
       setPageCounts(newPageCounts);
       setFileSizes(newFileSizes);
 
@@ -51,6 +68,8 @@ export default function Home() {
           return { file, selectedPages, isSinglePage };
         }),
       ]);
+
+      toast.success(`Added ${newFiles.length} PDF file${newFiles.length > 1 ? "s" : ""}`);
     }
   };
 
@@ -60,8 +79,10 @@ export default function Home() {
     }
 
     setIsMerging(true);
+    setMergeProgress(0);
     try {
       const mergedPdf = await mergePDFs(files);
+      setMergeProgress(100);
 
       // Create a blob from the merged PDF
       const blob = new Blob([mergedPdf], { type: "application/pdf" });
@@ -71,10 +92,14 @@ export default function Home() {
       const previewUrl = URL.createObjectURL(blob);
       setMergedPreviewUrl(previewUrl);
       setSelectedFileIndex(null); // Clear any selected file preview
+
+      toast.success("PDFs merged successfully!");
     } catch (error) {
       console.error("Error:", error);
+      toast.error("Failed to merge PDFs. Please try again.");
     } finally {
       setIsMerging(false);
+      setTimeout(() => setMergeProgress(0), 1000);
     }
   };
 
@@ -88,6 +113,7 @@ export default function Home() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      toast.success("PDF downloaded successfully!");
     }
   };
 
@@ -96,6 +122,7 @@ export default function Home() {
     if (selectedFileIndex === index) {
       setSelectedFileIndex(null);
     }
+    toast.success("File removed");
   };
 
   const previewFile = (file: File) => {
@@ -168,206 +195,226 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-8 bg-gray-50">
+    <main className="p-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">PDF Merger</h1>
-          <p className="mt-2 text-gray-600">
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-4xl font-bold text-white">PDF Merger</h1>
+            <Badge variant="secondary" className="text-sm">
+              Free Online Tool
+            </Badge>
+          </div>
+          <p className="mt-2 text-slate-300">
             Combine multiple PDF files into one document. Select specific pages, preview before
             merging, and download instantly.
           </p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <section className="bg-white rounded-lg shadow-sm p-6" aria-label="File Selection">
-            <div className="mb-6">
-              <label htmlFor="file-input" className="sr-only">
-                Select PDF files
-              </label>
-              <input
-                id="file-input"
-                type="file"
-                accept=".pdf"
-                multiple
-                onChange={handleFileChange}
-                className="block w-full text-sm text-gray-700
-                  file:mr-4 file:py-2 file:px-4
-                  file:rounded-full file:border-0
-                  file:text-sm file:font-semibold
-                  file:bg-blue-600 file:text-white
-                  hover:file:bg-blue-700
-                  cursor-pointer"
-                aria-label="Select PDF files to merge"
-              />
-            </div>
-
-            {files.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>File Selection</CardTitle>
+              <CardDescription>
+                Select PDF files to merge and choose which pages to include
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
               <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">Selected Files:</h2>
-                <ul className="space-y-4" role="list">
-                  {files.map((fileData, index) => (
-                    <li key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-800">
-                            {fileData.file.name}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            ({formatFileSize(fileSizes[fileData.file.name] || 0)})
-                          </span>
-                          <button
-                            onClick={() => setSelectedFileIndex(index)}
-                            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
-                            aria-label={`Preview ${fileData.file.name}`}
-                          >
-                            Preview
-                          </button>
-                        </div>
-                        <button
-                          onClick={() => removeFile(index)}
-                          className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors"
-                          aria-label={`Remove ${fileData.file.name}`}
-                        >
-                          Remove
-                        </button>
-                      </div>
-
-                      <div className="mt-2">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm text-gray-600">Select pages:</span>
-                          {!isSinglePage(fileData.file.name) && (
-                            <>
-                              <button
-                                onClick={() => selectAllPages(index)}
-                                className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
-                                aria-label={`Select all pages in ${fileData.file.name}`}
-                              >
-                                Select All
-                              </button>
-                              <button
-                                onClick={() => clearPageSelection(index)}
-                                className="text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors"
-                                aria-label={`Clear page selection in ${fileData.file.name}`}
-                              >
-                                Clear
-                              </button>
-                            </>
-                          )}
-                        </div>
-                        <div
-                          className="flex flex-wrap gap-1"
-                          role="group"
-                          aria-label={`Page selection for ${fileData.file.name}`}
-                        >
-                          {Array.from({ length: pageCounts[fileData.file.name] || 0 }, (_, i) => (
-                            <button
-                              key={i}
-                              onClick={() => togglePageSelection(index, i)}
-                              className={`w-8 h-8 text-xs font-medium rounded transition-colors ${
-                                fileData.selectedPages.includes(i)
-                                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                              } ${
-                                isSinglePage(fileData.file.name)
-                                  ? "cursor-not-allowed opacity-75"
-                                  : ""
-                              }`}
-                              disabled={isSinglePage(fileData.file.name)}
-                              aria-label={`Select page ${i + 1} of ${fileData.file.name}`}
-                              aria-pressed={fileData.selectedPages.includes(i)}
-                            >
-                              {i + 1}
-                            </button>
-                          ))}
-                        </div>
-                        <div className="mt-2 text-xs text-gray-500">
-                          {isSinglePage(fileData.file.name)
-                            ? "Single page document (automatically selected)"
-                            : fileData.selectedPages.length === 0
-                            ? "No pages selected (will use all pages)"
-                            : `${fileData.selectedPages.length} page${
-                                fileData.selectedPages.length === 1 ? "" : "s"
-                              } selected`}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <Label htmlFor="file-input" className="sr-only">
+                  Select PDF files
+                </Label>
+                <Input
+                  id="file-input"
+                  type="file"
+                  accept=".pdf"
+                  multiple
+                  onChange={handleFileChange}
+                  className="cursor-pointer"
+                />
               </div>
-            )}
 
-            <button
-              onClick={handleMerge}
-              disabled={files.length < 2 || isMerging || hasUnselectedMultiPageFiles()}
-              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                files.length < 2 || isMerging || hasUnselectedMultiPageFiles()
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-              }`}
-              aria-label="Merge selected PDF files"
-            >
-              {isMerging ? "Merging..." : "Merge PDFs"}
-            </button>
-          </section>
+              {files.length > 0 && (
+                <>
+                  <Separator className="my-6" />
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-semibold text-foreground">Selected Files:</h2>
+                      <Badge variant="outline">
+                        {files.length} file{files.length > 1 ? "s" : ""}
+                      </Badge>
+                    </div>
+                    <ul className="space-y-4" role="list">
+                      {files.map((fileData, index) => (
+                        <li key={index} className="bg-muted/50 p-4 rounded-lg border">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-foreground">
+                                {fileData.file.name}
+                              </span>
+                              <Badge variant="secondary" className="text-xs">
+                                {formatFileSize(fileSizes[fileData.file.name] || 0)}
+                              </Badge>
+                              <Button
+                                variant="link"
+                                onClick={() => setSelectedFileIndex(index)}
+                                className="text-sm p-1 h-auto cursor-pointer"
+                                title="Preview PDF"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              onClick={() => removeFile(index)}
+                              className="text-sm text-destructive hover:text-destructive p-1 h-auto cursor-pointer"
+                              title="Remove file"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
 
-          <section className="bg-white rounded-lg shadow-sm p-6" aria-label="Preview">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Preview</h2>
+                          <div className="mt-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm text-muted-foreground">Select pages:</span>
+                              {!isSinglePage(fileData.file.name) && (
+                                <>
+                                  <Button
+                                    variant="link"
+                                    onClick={() => selectAllPages(index)}
+                                    className="text-xs"
+                                  >
+                                    Select All
+                                  </Button>
+                                  <Button
+                                    variant="link"
+                                    onClick={() => clearPageSelection(index)}
+                                    className="text-xs text-muted-foreground"
+                                  >
+                                    Clear
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-1" role="group">
+                              {Array.from(
+                                { length: pageCounts[fileData.file.name] || 0 },
+                                (_, i) => (
+                                  <Button
+                                    key={i}
+                                    variant={
+                                      fileData.selectedPages.includes(i) ? "default" : "outline"
+                                    }
+                                    size="sm"
+                                    onClick={() => togglePageSelection(index, i)}
+                                    disabled={isSinglePage(fileData.file.name)}
+                                    className={`w-8 h-8 text-xs ${
+                                      isSinglePage(fileData.file.name)
+                                        ? "cursor-not-allowed opacity-75"
+                                        : ""
+                                    }`}
+                                  >
+                                    {i + 1}
+                                  </Button>
+                                )
+                              )}
+                            </div>
+                            <div className="mt-2 text-xs text-muted-foreground">
+                              {isSinglePage(fileData.file.name)
+                                ? "Single page document (automatically selected)"
+                                : fileData.selectedPages.length === 0
+                                ? "No pages selected (will use all pages)"
+                                : `${fileData.selectedPages.length} page${
+                                    fileData.selectedPages.length === 1 ? "" : "s"
+                                  } selected`}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </>
+              )}
+
+              <div className="space-y-4">
+                {isMerging && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Merging PDFs...</span>
+                      <span className="text-muted-foreground">{mergeProgress}%</span>
+                    </div>
+                    <Progress value={mergeProgress} className="h-2" />
+                  </div>
+                )}
+                <Button
+                  onClick={handleMerge}
+                  disabled={files.length < 2 || isMerging || hasUnselectedMultiPageFiles()}
+                  className="w-full"
+                >
+                  {isMerging ? "Merging..." : "Merge PDFs"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle>Preview</CardTitle>
+                  <CardDescription>Preview your PDF files and the merged result</CardDescription>
+                </div>
                 {mergedBlob && (
-                  <span className="text-sm text-gray-500">
-                    Size: {formatFileSize(mergedBlob.size)}
-                  </span>
+                  <Badge variant="secondary">Size: {formatFileSize(mergedBlob.size)}</Badge>
                 )}
               </div>
+            </CardHeader>
+            <CardContent>
               {mergedPreviewUrl && (
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <label htmlFor="merged-filename" className="text-sm font-medium text-gray-700">
-                      File name:
-                    </label>
-                    <input
-                      id="merged-filename"
-                      type="text"
-                      value={mergedFileName}
-                      onChange={(e) => setMergedFileName(e.target.value)}
-                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="merged.pdf"
-                      aria-label="Merged PDF file name"
-                    />
+                <>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-center gap-2 flex-1">
+                      <Label htmlFor="merged-filename" className="text-sm font-medium">
+                        File name:
+                      </Label>
+                      <Input
+                        id="merged-filename"
+                        type="text"
+                        value={mergedFileName}
+                        onChange={(e) => setMergedFileName(e.target.value)}
+                        className="flex-1"
+                        placeholder="merged.pdf"
+                      />
+                    </div>
+                    <Button onClick={handleDownload} variant="default">
+                      Download Merged PDF
+                    </Button>
                   </div>
-                  <button
-                    onClick={handleDownload}
-                    className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm shadow-sm transition-colors"
-                    aria-label="Download merged PDF"
-                  >
-                    Download Merged PDF
-                  </button>
-                </div>
+                  <Separator className="my-4" />
+                </>
               )}
-            </div>
-            <div className="h-[600px] w-full bg-gray-50 rounded-lg border border-gray-200">
-              {selectedFileIndex !== null && files[selectedFileIndex] && (
-                <iframe
-                  src={previewFile(files[selectedFileIndex].file)}
-                  className="w-full h-full border-0 rounded-lg"
-                  title={`Preview of ${files[selectedFileIndex].file.name}`}
-                />
-              )}
-              {mergedPreviewUrl && selectedFileIndex === null && (
-                <iframe
-                  src={mergedPreviewUrl}
-                  className="w-full h-full border-0 rounded-lg"
-                  title="Preview of merged PDF"
-                />
-              )}
-              {!selectedFileIndex && !mergedPreviewUrl && (
-                <div className="flex items-center justify-center h-full text-gray-500 font-medium">
-                  Select a file to preview or merge PDFs to see the result
-                </div>
-              )}
-            </div>
-          </section>
+              <div className="h-[600px] w-full bg-muted/50 rounded-lg border">
+                {selectedFileIndex !== null && files[selectedFileIndex] && (
+                  <iframe
+                    src={previewFile(files[selectedFileIndex].file)}
+                    className="w-full h-full border-0 rounded-lg"
+                    title={`Preview of ${files[selectedFileIndex].file.name}`}
+                  />
+                )}
+                {mergedPreviewUrl && selectedFileIndex === null && (
+                  <iframe
+                    src={mergedPreviewUrl}
+                    className="w-full h-full border-0 rounded-lg"
+                    title="Preview of merged PDF"
+                  />
+                )}
+                {!selectedFileIndex && !mergedPreviewUrl && (
+                  <div className="flex items-center justify-center h-full text-muted-foreground font-medium">
+                    Select a file to preview or merge PDFs to see the result
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>

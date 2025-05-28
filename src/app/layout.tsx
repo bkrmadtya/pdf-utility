@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PDF Merger - Merge PDF Files Online",
+  title: "PDF Merger - Free Online Tool",
   description:
-    "Free online PDF merger tool. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
-  keywords: "PDF merger, PDF combiner, merge PDF files, combine PDFs, PDF tool, online PDF merger",
+    "Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+  keywords: ["PDF merger", "PDF combiner", "merge PDF", "combine PDF", "PDF tool", "free PDF tool"],
   authors: [{ name: "PDF Utility" }],
   openGraph: {
     title: "PDF Merger - Merge PDF Files Online",
@@ -58,7 +59,11 @@ const jsonLd = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
       <head>
@@ -68,7 +73,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} min-h-screen bg-slate-950 relative`}>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,#000_70%,transparent_100%)]"></div>
+        <div className="relative">{children}</div>
+        <Toaster />
+      </body>
     </html>
   );
 }
