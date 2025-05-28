@@ -281,14 +281,14 @@ export default function Home() {
                                   <Button
                                     variant="link"
                                     onClick={() => selectAllPages(index)}
-                                    className="text-xs"
+                                    className="text-xs cursor-pointer"
                                   >
                                     Select All
                                   </Button>
                                   <Button
                                     variant="link"
                                     onClick={() => clearPageSelection(index)}
-                                    className="text-xs text-muted-foreground"
+                                    className="text-xs text-muted-foreground cursor-pointer"
                                   >
                                     Clear
                                   </Button>
