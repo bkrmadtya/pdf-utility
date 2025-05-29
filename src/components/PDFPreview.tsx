@@ -1,6 +1,8 @@
 import { useRef, useEffect, memo, useState } from "react";
 import { RenderTask } from "pdfjs-dist";
+
 import "@/lib/pdfjs-worker-client"; // Import PDF.js worker configuration
+import { cn } from "@/lib/utils";
 
 interface PDFPreviewProps {
   file: File;
@@ -59,8 +61,10 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
 
         if (!isMounted) return;
 
+        const SCALE_FACTOR = 0.1; // Use a lower scale factor for better performance
+
         // Get the original page dimensions
-        const viewport = page.getViewport({ scale: 0.1 });
+        const viewport = page.getViewport({ scale: SCALE_FACTOR });
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d", { alpha: false }); // Optimize for PDF rendering
 
@@ -68,7 +72,7 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
 
         // Calculate the scale to fit the container width while maintaining aspect ratio
         const containerWidth = containerRef.current.clientWidth;
-        const scale = (containerWidth / viewport.width) * 0.1;
+        const scale = (containerWidth / viewport.width) * SCALE_FACTOR;
         const scaledViewport = page.getViewport({ scale });
 
         // Set canvas dimensions to match the scaled viewport
@@ -125,7 +129,7 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
           role="status"
           aria-label="Loading PDF preview"
         >
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
         </div>
       )}
       {error && (
@@ -138,9 +142,10 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
       )}
       <canvas
         ref={canvasRef}
-        className={`w-full h-auto rounded-xs bg-white ${
-          isLoading ? "opacity-0" : "opacity-100"
-        } transition-opacity duration-300`}
+        className={cn(
+          "w-full h-auto rounded-xs bg-white opacity-100 transition-opacity duration-300",
+          { "opacity-0": isLoading }
+        )}
         aria-label={`PDF preview page ${pageNumber}`}
       />
     </figure>
