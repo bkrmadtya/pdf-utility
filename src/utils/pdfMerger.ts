@@ -1,10 +1,12 @@
 import { PDFDocument } from 'pdf-lib';
 
-export interface PDFFileWithPages {
-  file: File;
+export type PDFFileWithPages = {
+  id: string;
+  name: string;
+  size: string;
+  pages: number;
   selectedPages: number[];
-  isSinglePage: boolean;
-  fileSize: number;
+  file: File
 }
 
 export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Array> {
@@ -13,8 +15,8 @@ export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Arra
     const mergedPdf = await PDFDocument.create();
 
     // Filter out files with no pages selected (except single-page files)
-    const filesToMerge = pdfFiles.filter(({ selectedPages, isSinglePage }) => {
-      return isSinglePage || selectedPages.length > 0;
+    const filesToMerge = pdfFiles.filter(({ selectedPages, pages }) => {
+      return pages === 1 || selectedPages.length > 0;
     });
 
     // Process each PDF file

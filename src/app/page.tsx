@@ -1,315 +1,327 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { mergePDFs, PDFFileWithPages } from "../utils/pdfMerger";
-import { PDFDocument } from "pdf-lib";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import PDFFileItem from "@/components/PDFFileItem";
-import MergedPDFPreview from "@/components/MergedPDFPreview";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { arrayMove } from "@dnd-kit/sortable";
+import { PDFDocument } from "pdf-lib";
+import { Upload, FileText, X, Download, RotateCcw } from "lucide-react";
 
-// Dynamically import the client-only worker configuration
-import("../lib/pdfjs-worker-client");
+import { formatFileSize } from "@/utils/format";
+import { generateRandomId } from "@/utils/generateRandomId";
+import { mergePDFs, PDFFileWithPages } from "@/utils/pdfMerger";
 
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+
+const DEFAULT_MERGED_FILE = {
+  blob: new Blob(),
+  previewUrl: "",
+  name: "",
+};
+
+export default function Component() {
   const [files, setFiles] = useState<PDFFileWithPages[]>([]);
-  const [isMerging, setIsMerging] = useState(false);
-  const [mergedPreviewUrl, setMergedPreviewUrl] = useState<string | null>(null);
-  const [mergedBlob, setMergedBlob] = useState<Blob | null>(null);
-  const [pageCounts, setPageCounts] = useState<{ [key: string]: number }>({});
-  const mergedFileNameRef = useRef<HTMLInputElement>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mergedFile, setMergedFile] = useState(DEFAULT_MERGED_FILE);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newFiles = Array.from(e.target.files).filter((file) => file.type === "application/pdf");
-
-      if (newFiles.length === 0) {
-        toast.error("Please select PDF files only");
-        return;
-      }
-
-      // Get page counts for new files
-      const newPageCounts = { ...pageCounts };
-
-      for (const file of newFiles) {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
-        const pageCount = pdf.getPageCount();
-        newPageCounts[file.name] = pageCount;
-      }
-
-      setPageCounts(newPageCounts);
-
-      // Add new files with appropriate page selection
-      setFiles((prev) => [
-        ...prev,
-        ...newFiles.map((file) => {
-          const pageCount = newPageCounts[file.name];
-          const isSinglePage = pageCount === 1;
-          // Select all pages by default
-          const selectedPages = Array.from({ length: pageCount }, (_, i) => i);
-          return {
-            file,
-            selectedPages,
-            isSinglePage,
-            fileSize: file.size,
-          };
-        }),
-      ]);
-
-      toast.success(`Added ${newFiles.length} PDF file${newFiles.length > 1 ? "s" : ""}`);
-    }
+  const removeFile = (id: string) => {
+    setFiles((prevFiles) => (prevFiles || []).filter((file) => file.id !== id));
   };
 
   const handleMerge = async () => {
-    if (files.length < 2) {
-      return;
-    }
+    if (files.length < 2) return;
 
-    setIsMerging(true);
+    setIsProcessing(true);
 
     try {
       const mergedPdf = await mergePDFs(files);
 
       // Create a blob from the merged PDF
       const blob = new Blob([mergedPdf], { type: "application/pdf" });
-      setMergedBlob(blob);
-
-      // Create preview URL
       const previewUrl = URL.createObjectURL(blob);
-      setMergedPreviewUrl(previewUrl);
+      setMergedFile({ blob, previewUrl, name: `merged-${new Date().toISOString()}.pdf` });
 
       toast.success("PDFs merged successfully!");
     } catch (error) {
       console.error("Error:", error);
       toast.error("Failed to merge PDFs. Please try again.");
     } finally {
-      setIsMerging(false);
+      setIsProcessing(false);
     }
+  };
+
+  const handleFileSelection = async (selectedFiles: FileList | null) => {
+    if (!selectedFiles || selectedFiles?.length === 0) {
+      toast.error("Please select PDF files only");
+      return;
+    }
+    const newFiles: PDFFileWithPages[] = [];
+
+    await Promise.allSettled(
+      Array.from(selectedFiles).map(async (file) => {
+        // Validate file type
+        if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+          const pdf = await PDFDocument.load(await file.arrayBuffer());
+          const pages = pdf.getPageCount();
+
+          const newFile: PDFFileWithPages = {
+            file,
+            id: generateRandomId(),
+            name: file.name,
+            pages: pdf.getPageCount(),
+            selectedPages: pages ? pdf.getPageIndices() : [],
+            size: formatFileSize(file.size),
+          };
+          newFiles.push(newFile);
+        }
+      })
+    );
+    setFiles((prevFiles) => [...(prevFiles || []), ...newFiles]);
+    setMergedFile(DEFAULT_MERGED_FILE); // resetting merged file's preview
+
+    toast.success(`Added ${newFiles.length} PDF file${newFiles.length > 1 ? "s" : ""}`);
   };
 
   const handleDownload = () => {
-    if (mergedBlob) {
-      const url = URL.createObjectURL(mergedBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      const fileName = mergedFileNameRef?.current?.value ?? "merged.pdf";
-      link.download = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success("PDF downloaded successfully!");
-    }
+    if (!mergedFile) return;
+
+    const link = document.createElement("a");
+    link.href = mergedFile.previewUrl;
+    const fileName = mergedFile.name ?? "merged.pdf";
+    link.download = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(mergedFile.previewUrl);
+    toast.success("PDF downloaded successfully!");
   };
 
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-    toast.success("File removed");
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
   };
 
-  const togglePageSelection = (fileIndex: number, pageNumber: number) => {
-    setFiles((prev) => {
-      const newFiles = [...prev];
-      const file = { ...newFiles[fileIndex] };
-      const pageCount = pageCounts[file.file.name];
-
-      // Don't allow deselection of single pages
-      if (pageCount === 1) {
-        return prev;
-      }
-
-      const pageIndex = file.selectedPages.indexOf(pageNumber);
-
-      if (pageIndex === -1) {
-        // Add page if not selected
-        file.selectedPages = [...file.selectedPages, pageNumber].sort((a, b) => a - b);
-      } else {
-        // Remove page if already selected
-        file.selectedPages = file.selectedPages.filter((p) => p !== pageNumber);
-      }
-
-      newFiles[fileIndex] = file;
-      return newFiles;
-    });
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelection(e.target.files);
+    // Reset input value to allow selecting the same file again
+    e.target.value = "";
   };
 
-  const selectAllPages = (fileIndex: number) => {
-    setFiles((prev) => {
-      const newFiles = [...prev];
-      const file = { ...newFiles[fileIndex] };
-      const totalPages = pageCounts[file.file.name];
-      file.selectedPages = Array.from({ length: totalPages }, (_, i) => i);
-      newFiles[fileIndex] = file;
-      return newFiles;
-    });
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
   };
 
-  const clearPageSelection = (fileIndex: number) => {
-    setFiles((prev) => {
-      const newFiles = [...prev];
-      const file = { ...newFiles[fileIndex] };
-      const pageCount = pageCounts[file.file.name];
-
-      // Don't allow clearing selection for single pages
-      if (pageCount === 1) {
-        return prev;
-      }
-
-      file.selectedPages = [];
-      newFiles[fileIndex] = file;
-      return newFiles;
-    });
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
   };
 
-  const isSinglePage = (fileName: string) => {
-    return pageCounts[fileName] === 1;
-  };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
 
-  const hasUnselectedMultiPageFiles = () => {
-    return files.some((file) => {
-      const pageCount = pageCounts[file.file.name];
-      return pageCount > 1 && file.selectedPages.length === 0;
-    });
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      setFiles((items) => {
-        const oldIndex = items.findIndex((_, i) => i === active.id);
-        const newIndex = items.findIndex((_, i) => i === over?.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
+    const droppedFiles = e.dataTransfer.files;
+    handleFileSelection(droppedFiles);
   };
 
   return (
-    <main className="p-8">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-8">
-          <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-4xl font-bold text-white">PDF Merger</h1>
-            <Badge variant="secondary" className="text-sm">
-              Free Online Tool
-            </Badge>
-          </div>
-          <p className="mt-2 text-slate-300">
-            Combine multiple PDF files into one document. Select specific pages, preview before
-            merging, and download instantly.
-          </p>
-        </header>
+    <div className="max-w-4xl mx-auto py-40 space-y-8">
+      {/* Header */}
+      <header className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-3">
+          <h1 className="text-3xl font-bold text-zinc-100 text-balance">PDF Merger</h1>
+          <Badge variant="secondary" className="text-xs bg-zinc-800 text-zinc-300">
+            Free Tool
+          </Badge>
+        </div>
+        <p className="text-zinc-400 max-w-2xl mx-auto text-pretty">
+          Combine multiple PDF files into one document. Select pages, preview, and download
+          instantly.
+        </p>
+      </header>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>File Selection</CardTitle>
-            <CardDescription>
-              Select PDF files to merge and choose which pages to include
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <section className="mb-6">
-              <Label htmlFor="file-input" className="sr-only">
-                Select PDF files
-              </Label>
-              <Input
-                id="file-input"
-                type="file"
-                accept=".pdf"
-                multiple
-                onChange={handleFileChange}
-                className="cursor-pointer"
-              />
-            </section>
-
-            {files.length > 0 && (
-              <>
-                <Separator className="my-6 bg-gray-700" />
-                <section className="mb-6">
-                  <header className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-100">Selected Files:</h2>
-                    <Badge variant="outline" className="border-gray-700 text-gray-200">
-                      {files.length} file{files.length > 1 ? "s" : ""}
-                    </Badge>
-                  </header>
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={files.map((_, index) => index)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <ul className="space-y-6" role="list">
-                        {files.map((fileData, index) => (
-                          <PDFFileItem
-                            key={index}
-                            fileData={fileData}
-                            index={index}
-                            pageCount={pageCounts[fileData.file.name]}
-                            fileSize={fileData.fileSize}
-                            isSinglePage={isSinglePage(fileData.file.name)}
-                            onRemove={removeFile}
-                            onTogglePageSelection={togglePageSelection}
-                            onSelectAllPages={selectAllPages}
-                            onClearPageSelection={clearPageSelection}
-                          />
-                        ))}
-                      </ul>
-                    </SortableContext>
-                  </DndContext>
-                </section>
-              </>
-            )}
-
-            <Button
-              onClick={handleMerge}
-              disabled={files.length < 2 || isMerging || hasUnselectedMultiPageFiles()}
-              className="w-full"
+      {/* File Upload Area */}
+      <Card
+        className={`border-2 border-dashed transition-colors cursor-pointer ${
+          isDragOver
+            ? "border-blue-500 bg-blue-950/20"
+            : "border-zinc-800 hover:border-zinc-700 bg-zinc-900"
+        }`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={handleButtonClick}
+      >
+        <CardContent className="p-8">
+          <div className="text-center space-y-4">
+            <div
+              className={`size-16 mx-auto rounded-full flex items-center justify-center transition-colors ${
+                isDragOver ? "bg-blue-800" : "bg-zinc-800"
+              }`}
             >
-              {isMerging ? "Merging..." : "Merge PDFs"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {mergedPreviewUrl && (
-          <MergedPDFPreview
-            mergedPreviewUrl={mergedPreviewUrl}
-            mergedBlob={mergedBlob}
-            mergedFileNameRef={mergedFileNameRef}
-            onDownload={handleDownload}
+              <Upload
+                className={`size-8 transition-colors ${
+                  isDragOver ? "text-blue-300" : "text-blue-400"
+                }`}
+              />
+            </div>
+            <div>
+              <Button
+                size="lg"
+                className="mb-2 bg-blue-600 hover:bg-blue-700"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleButtonClick();
+                }}
+              >
+                Choose PDF Files
+              </Button>
+              <p className="text-sm text-zinc-400">
+                {isDragOver ? "Drop your PDF files here" : "or drag and drop your files here"}
+              </p>
+              <p className="text-xs text-zinc-500 mt-1">Supports multiple PDF files</p>
+            </div>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            multiple
+            onChange={handleFileInputChange}
+            className="hidden"
           />
-        )}
-      </div>
-    </main>
+        </CardContent>
+      </Card>
+
+      {/* Selected Files */}
+      {files && files.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-zinc-100">
+              Selected Files ({files?.length || 0})
+            </h2>
+          </div>
+
+          <div className="space-y-3">
+            {(files || []).map((file) => (
+              <Card key={file.id} className="overflow-hidden bg-zinc-900 border-zinc-800">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-4">
+                    {/* File Icon */}
+                    <div className="size-12 bg-zinc-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <FileText className="size-6 text-red-400" />
+                    </div>
+
+                    {/* File Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-medium text-zinc-100 truncate">{file.name}</h3>
+                          <div className="flex items-center gap-4 mt-1 text-sm text-zinc-400">
+                            <span>{file.size}</span>
+                            <span>
+                              {file.pages} page{file.pages > 1 ? "s" : ""}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(file.id)}
+                          className="text-zinc-500 hover:text-red-400 hover:bg-zinc-800"
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </div>
+
+                      {/* Page Selection */}
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className="text-sm text-zinc-400">Pages:</span>
+                        <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
+                          {file.selectedPages.length === file.pages
+                            ? "All"
+                            : file.selectedPages.join(", ")}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-6 px-2 text-blue-400 hover:text-blue-300 hover:bg-zinc-800"
+                        >
+                          Select Pages
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Preview Thumbnail */}
+                    <div className="w-16 h-20 bg-zinc-800 border border-zinc-700 rounded shadow-sm flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-16 bg-zinc-700 rounded flex items-center justify-center">
+                        <FileText className="size-6 text-zinc-500" />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Merge Button */}
+          <div className="flex justify-center pt-4">
+            <Button
+              size="lg"
+              onClick={handleMerge}
+              disabled={isProcessing}
+              className="px-8 bg-blue-600 hover:bg-blue-700"
+            >
+              {isProcessing ? (
+                <>
+                  <RotateCcw className="size-4 me-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Merge PDFs"
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Merged PDF Preview */}
+      {mergedFile?.previewUrl && (
+        <>
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-zinc-100">Merged PDF Preview</h2>
+
+            {/* File Name Input */}
+            <div className="flex items-center gap-3 max-w-md">
+              <label className="text-sm font-medium text-zinc-300 whitespace-nowrap">
+                File name:
+              </label>
+              <Input
+                value={mergedFile?.name}
+                onChange={(e) => setMergedFile((prev) => ({ ...prev, name: e.target.value }))}
+                className="flex-1 bg-zinc-800 border-zinc-700 text-zinc-200 focus-visible:ring-blue-500 focus-visible:border-blue-500"
+              />
+              <Button
+                className="whitespace-nowrap bg-blue-600 hover:bg-blue-700"
+                onClick={handleDownload}
+              >
+                <Download className="size-4 me-2" />
+                Download
+              </Button>
+            </div>
+
+            {/* PDF Preview */}
+            <iframe
+              src={mergedFile.previewUrl}
+              className="w-full h-[600px] border-0 rounded-lg"
+              title="Preview of merged PDF"
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 }
