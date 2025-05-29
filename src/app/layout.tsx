@@ -74,7 +74,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} min-h-dvh bg-zinc-950 relative p-4`}>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b68_1px,transparent_1px),linear-gradient(to_bottom,#1e293b68_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_45%_45%_at_50%_30%,#000_70%,transparent_100%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#3f69956a_1px,transparent_0px)] bg-[size:18px_18px] sm:bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)]"></div>
         <div className="relative">{children}</div>
         <Toaster position="top-right" expand richColors closeButton />
       </body>
