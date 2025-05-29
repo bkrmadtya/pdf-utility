@@ -17,6 +17,7 @@ export default function Component() {
     handleMerge,
     handleDownload,
     setMergedFile,
+    handlePageSelectionChange,
   } = usePDFMerger();
 
   return (
@@ -29,6 +30,7 @@ export default function Component() {
         onClearAll={clearAllFiles}
         onMerge={handleMerge}
         isProcessing={isProcessing}
+        onPageSelectionChange={handlePageSelectionChange}
       />
       <MergedPDFPreview
         previewUrl={mergedFile.previewUrl}

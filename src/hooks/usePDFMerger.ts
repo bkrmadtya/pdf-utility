@@ -133,6 +133,15 @@ export function usePDFMerger() {
     toast.success("PDF downloaded successfully!");
   };
 
+  const handlePageSelectionChange = (fileId: string, selectedPages: number[]) => {
+    console.log(selectedPages)
+    setFiles((prevFiles) =>
+      prevFiles.map((file) =>
+        file.id === fileId ? { ...file, selectedPages } : file
+      )
+    );
+  };
+
   return {
     files,
     isProcessing,
@@ -143,5 +152,6 @@ export function usePDFMerger() {
     handleMerge,
     handleDownload,
     setMergedFile,
+    handlePageSelectionChange,
   };
 } 

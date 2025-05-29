@@ -1,5 +1,6 @@
 import { useRef, useEffect, memo, useState } from "react";
 import { RenderTask } from "pdfjs-dist";
+import "@/lib/pdfjs-worker-client"; // Import PDF.js worker configuration
 
 interface PDFPreviewProps {
   file: File;
@@ -54,7 +55,7 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
         const pdfjsLib = await import("pdfjs-dist");
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const page = await pdf.getPage(pageNumber);
+        const page = await pdf.getPage(pageNumber + 1);
 
         if (!isMounted) return;
 
@@ -120,7 +121,7 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
     <figure ref={containerRef} className="w-full relative">
       {isLoading && (
         <div
-          className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg"
+          className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-sm"
           role="status"
           aria-label="Loading PDF preview"
         >
@@ -137,7 +138,7 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
       )}
       <canvas
         ref={canvasRef}
-        className={`w-full h-auto rounded-lg border bg-white ${
+        className={`w-full h-auto rounded-xs bg-white ${
           isLoading ? "opacity-0" : "opacity-100"
         } transition-opacity duration-300`}
         aria-label={`PDF preview page ${pageNumber}`}
