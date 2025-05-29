@@ -41,7 +41,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
   return (
     <Card
       className={cn(
-        "border-2 border-dashed transition-colors cursor-pointer border-zinc-800 hover:border-zinc-700 bg-zinc-900/80",
+        "border-2 border-dashed transition-colors cursor-pointer border-zinc-800 hover:border-blue-500 hover:bg-blue-950/40 bg-zinc-900/60",
         { "border-blue-500 bg-blue-950/40": isDragOver }
       )}
       onDragOver={handleDragOver}
