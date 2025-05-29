@@ -29,23 +29,23 @@ export function MergedPDFPreview({
 
       <div className="space-y-4">
         {/* File Info */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-green-100 border border-green-600 rounded-lg">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-blue-100 border border-blue-600 rounded-lg">
           <div className="flex items-center gap-4">
-            <div className="size-14 bg-green-200 rounded-lg flex items-center justify-center">
-              <FileText className="size-6 text-green-600" />
+            <div className="size-14 bg-blue-200 rounded-lg flex items-center justify-center">
+              <FileText className="size-6 text-blue-600" />
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-1 font-semibold">
                 <Input
                   defaultValue={name || "merged-document.pdf"}
                   onChange={(e) => onNameChange(e.target.value)}
-                  className="h-7 text-xs sm:text-sm text-zinc-800 font-medium bg-white/90 focus-visible:ring-1 focus-visible:ring-green-600  border-none px-2 shadow-none max-w-fit"
+                  className="h-7 text-xs sm:text-sm text-zinc-800 font-medium bg-white/90 focus-visible:ring-1 focus-visible:ring-blue-600  border-none px-2 shadow-none max-w-fit"
                 />
-                <span className="text-xs sm:text-sm font-medium text-green-800  flex-shrink-0">
+                <span className="text-xs sm:text-sm font-medium text-blue-800  flex-shrink-0">
                   .pdf
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-green-800">
+              <p className="text-xs sm:text-sm text-blue-800">
                 {size} <span className="mx-1">•</span> {pages} page
                 {pages > 1 ? "s" : ""}
               </p>

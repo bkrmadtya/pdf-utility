@@ -161,8 +161,8 @@ export function FileList({
                             <Checkbox
                               id={`page-${file.id}-${pageNum}`}
                               checked={file.selectedPages.includes(pageNum)}
-                              onCheckedChange={(checked: boolean | "checked" | "unchecked") =>
-                                handlePageSelection(file.id, pageNum, checked)
+                              onCheckedChange={(checked) =>
+                                handlePageSelection(file.id, pageNum, checked === true)
                               }
                             />
                             <label

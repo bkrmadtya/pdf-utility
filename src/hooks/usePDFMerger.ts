@@ -36,6 +36,7 @@ export function usePDFMerger() {
 
   const removeFile = (id: string) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
+    setMergedFile(DEFAULT_MERGED_FILE);
   };
 
   const clearAllFiles = () => {
@@ -89,8 +90,6 @@ export function usePDFMerger() {
   };
 
   const handleMerge = async () => {
-    if (files.length < 2) return;
-
     setIsProcessing(true);
 
     try {
@@ -134,7 +133,6 @@ export function usePDFMerger() {
   };
 
   const handlePageSelectionChange = (fileId: string, selectedPages: number[]) => {
-    console.log(selectedPages)
     setFiles((prevFiles) =>
       prevFiles.map((file) =>
         file.id === fileId ? { ...file, selectedPages } : file
