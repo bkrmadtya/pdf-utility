@@ -19,6 +19,8 @@ const DEFAULT_MERGED_FILE = {
   blob: new Blob(),
   previewUrl: "",
   name: "",
+  size: "",
+  pages: 0,
 };
 
 export default function Component() {
@@ -45,10 +47,18 @@ export default function Component() {
     try {
       const mergedPdf = await mergePDFs(files);
 
+      const pdf = await PDFDocument.load(mergedPdf);
+
       // Create a blob from the merged PDF
       const blob = new Blob([mergedPdf], { type: "application/pdf" });
       const previewUrl = URL.createObjectURL(blob);
-      setMergedFile({ blob, previewUrl, name: `merged-${new Date().toISOString()}.pdf` });
+      setMergedFile({
+        blob,
+        previewUrl,
+        name: "merged",
+        size: formatFileSize(blob.size),
+        pages: pdf.getPageCount(),
+      });
 
       toast.success("PDFs merged successfully!");
     } catch (error) {
@@ -108,8 +118,8 @@ export default function Component() {
 
     const link = document.createElement("a");
     link.href = mergedFile.previewUrl;
-    const fileName = mergedFile.name ?? "merged.pdf";
-    link.download = fileName.endsWith(".pdf") ? fileName : `${fileName}.pdf`;
+    const fileName = mergedFile.name ?? "merged";
+    link.download = `${fileName}.pdf`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -146,7 +156,7 @@ export default function Component() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pt-6 sm:py-40 space-y-6 sm:space-y-8">
+    <div className="max-w-4xl mx-auto py-12 sm:pt-30 space-y-6 sm:space-y-8">
       {/* Header */}
       <header className="text-center space-y-3 sm:space-y-4">
         <div className="flex items-center justify-center gap-2 sm:gap-3">
@@ -317,31 +327,49 @@ export default function Component() {
         </div>
       )}
 
-      {/* Merged PDF Preview */}
+      {/* Result Section */}
+
       {mergedFile?.previewUrl && (
         <>
-          <div className="space-y-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-zinc-100">Merged PDF Preview</h2>
+          <h3 className="text-white font-bold text-center">Merged Document</h3>
 
-            {/* File Name Input */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 max-w-md">
-              <label className="text-sm font-medium text-zinc-300 whitespace-nowrap">
-                File name:
-              </label>
-              <Input
-                value={mergedFile?.name}
-                onChange={(e) => setMergedFile((prev) => ({ ...prev, name: e.target.value }))}
-                className="flex-1 bg-zinc-800 border-zinc-700 text-zinc-200 focus-visible:ring-blue-500 focus-visible:border-blue-500"
-              />
+          <div className="space-y-4">
+            {/* File Info */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-green-100 border border-green-600 rounded-lg">
+              <div className="flex items-center gap-4">
+                <div className="size-14 bg-green-200 rounded-lg flex items-center justify-center">
+                  <FileText className="size-6 text-green-600" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-1 font-semibold">
+                    <Input
+                      defaultValue={mergedFile?.name || "merged-document.pdf"}
+                      onChange={(e) => setMergedFile((prev) => ({ ...prev, name: e.target.value }))}
+                      className="h-7 text-xs sm:text-sm text-zinc-800 font-medium bg-white/90 focus-visible:ring-1 focus-visible:ring-green-600  border-none px-2 shadow-none max-w-fit"
+                    />
+                    <span className="text-xs sm:text-sm font-medium text-green-800  flex-shrink-0">
+                      .pdf
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-green-800">
+                    {mergedFile?.size} <span className="mx-1">•</span> {mergedFile.pages} page
+                    {mergedFile.pages > 1 ? "s" : ""}
+                  </p>
+                </div>
+              </div>
+
               <Button
-                className="w-full sm:w-auto whitespace-nowrap bg-blue-600 hover:bg-blue-700"
+                size="sm"
+                className="max-w-32 ml-auto sm:mx-0 px-8 bg-black hover:bg-black/80"
+                type="button"
                 onClick={handleDownload}
               >
-                <Download className="size-4 me-2" />
+                <Download className="w-4 h-4 mr-2" />
                 Download
               </Button>
             </div>
 
+            {/* Preview Area */}
             {/* PDF Preview */}
             <iframe
               src={mergedFile.previewUrl}
