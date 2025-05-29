@@ -6,6 +6,7 @@ import { PDFFileWithPages } from "@/utils/pdfMerger";
 import { useState } from "react";
 import PDFPreview from "@/components/PDFPreview";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 interface FileListProps {
   files: PDFFileWithPages[];
@@ -127,13 +128,20 @@ export function FileList({
                 </div>
               </div>
               {/* PDF Previews and Page Selection */}
-              {expandedFileIds.includes(file.id) && (
-                <>
+              <div
+                className={cn(
+                  "grid transition-all duration-300 ease-in-out grid-rows-[0fr] opacity-0",
+                  {
+                    "grid-rows-[1fr] opacity-100": expandedFileIds.includes(file.id),
+                  }
+                )}
+              >
+                <div className="overflow-hidden">
                   <Button
                     id={`select-all-${file.id}`}
                     variant="ghost"
                     size="sm"
-                    className="text-xs h-6 px-2 my-2 text-blue-400 hover:text-blue-300 hover:bg-zinc-800"
+                    className="float-right text-xs h-6 px-2 my-2 text-blue-400 hover:text-blue-300 hover:bg-zinc-800"
                     onClick={() => handleSelectAllPages(file.id)}
                   >
                     Select All Pages
@@ -165,8 +173,8 @@ export function FileList({
                       ))}
                     </ul>
                   </div>
-                </>
-              )}
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
