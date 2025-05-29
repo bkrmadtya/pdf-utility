@@ -56,28 +56,40 @@ export default function Component() {
 
   const handleFileSelection = async (selectedFiles: FileList | null) => {
     if (!selectedFiles || selectedFiles?.length === 0) {
-      toast.error("Please select PDF files only");
+      toast.error("Please select PDF files to merge.");
       return;
     }
-    const newFiles: PDFFileWithPages[] = [];
 
+    const filteredValidFiles = Array.from(selectedFiles).filter(
+      (file) => file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+    );
+
+    if (filteredValidFiles.length === 0) {
+      toast.error("No valid PDF files selected. Please select PDF files only.");
+      return;
+    }
+
+    const areAllFilesValid = filteredValidFiles.length === selectedFiles.length;
+    if (!areAllFilesValid) {
+      toast.error("Invalid file type detected. Please select PDF files only.");
+    }
+
+    const newFiles: PDFFileWithPages[] = [];
     await Promise.allSettled(
       Array.from(selectedFiles).map(async (file) => {
-        // Validate file type
-        if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-          const pdf = await PDFDocument.load(await file.arrayBuffer());
-          const pages = pdf.getPageCount();
+        const pdf = await PDFDocument.load(await file.arrayBuffer());
+        const pages = pdf.getPageCount();
 
-          const newFile: PDFFileWithPages = {
-            file,
-            id: generateRandomId(),
-            name: file.name,
-            pages: pdf.getPageCount(),
-            selectedPages: pages ? pdf.getPageIndices() : [],
-            size: formatFileSize(file.size),
-          };
-          newFiles.push(newFile);
-        }
+        const newFile: PDFFileWithPages = {
+          file,
+          id: generateRandomId(),
+          name: file.name,
+          pages: pdf.getPageCount(),
+          selectedPages: pages ? pdf.getPageIndices() : [],
+          size: formatFileSize(file.size),
+        };
+
+        newFiles.push(newFile);
       })
     );
     setFiles((prevFiles) => [...(prevFiles || []), ...newFiles]);
