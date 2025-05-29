@@ -44,12 +44,15 @@ export function FileList({
     onPageSelectionChange?.(fileId, newSelectedPages);
   };
 
-  const handleSelectAllPages = (fileId: string) => {
-    const file = files.find((f) => f.id === fileId);
+  const toggleSelectAllPages = (file: PDFFileWithPages) => {
     if (!file) return;
 
-    const newSelectedPageIndices = Array.from({ length: file.pages }, (_, i) => i);
-    onPageSelectionChange?.(fileId, newSelectedPageIndices);
+    const isAllSelected = file.selectedPages.length === file.pages;
+
+    onPageSelectionChange?.(
+      file.id,
+      isAllSelected ? [] : Array.from({ length: file.pages }, (_, i) => i)
+    );
   };
 
   const toggleFileExpansion = (fileId: string) => {
@@ -114,7 +117,7 @@ export function FileList({
                     <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
                       {file.selectedPages.length === file.pages
                         ? "All"
-                        : file.selectedPages.map((page) => page + 1).join(", ")}
+                        : file.selectedPages.map((page) => page + 1).join(", ") || "None"}
                     </Badge>
                     <Button
                       variant="ghost"
@@ -131,9 +134,7 @@ export function FileList({
               <div
                 className={cn(
                   "grid transition-all duration-300 ease-in-out grid-rows-[0fr] opacity-0",
-                  {
-                    "grid-rows-[1fr] opacity-100": expandedFileIds.includes(file.id),
-                  }
+                  { "grid-rows-[1fr] opacity-100": expandedFileIds.includes(file.id) }
                 )}
               >
                 <div className="overflow-hidden">
@@ -142,9 +143,9 @@ export function FileList({
                     variant="ghost"
                     size="sm"
                     className="float-right text-xs h-6 px-2 my-2 text-blue-400 hover:text-blue-300 hover:bg-zinc-800"
-                    onClick={() => handleSelectAllPages(file.id)}
+                    onClick={() => toggleSelectAllPages(file)}
                   >
-                    Select All Pages
+                    {file.pages === file.selectedPages.length ? "Unselect" : "Select"} All Pages
                   </Button>
                   <div className="w-full overflow-x-auto scrollbar-thin">
                     <ul className="min-w-min flex gap-4 pb-4">
