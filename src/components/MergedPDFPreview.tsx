@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { formatFileSize } from "@/utils/format";
 import { RefObject } from "react";
@@ -58,7 +57,6 @@ const MergedPDFPreview = ({
             Download Merged PDF
           </Button>
         </div>
-        <Separator className="my-4 bg-gray-700" />
         <div className="h-[600px] w-full bg-gray-800/50 rounded-lg border border-gray-700">
           <iframe
             src={mergedPreviewUrl}
