@@ -32,6 +32,11 @@ export default function Component() {
     setFiles((prevFiles) => (prevFiles || []).filter((file) => file.id !== id));
   };
 
+  const clearAllFiles = () => {
+    setFiles([]);
+    setMergedFile(DEFAULT_MERGED_FILE);
+  };
+
   const handleMerge = async () => {
     if (files.length < 2) return;
 
@@ -216,6 +221,15 @@ export default function Component() {
             <h2 className="text-lg sm:text-xl font-semibold text-zinc-100">
               Selected Files ({files?.length || 0})
             </h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearAllFiles}
+              className="text-zinc-400 hover:text-red-400 hover:bg-zinc-800"
+            >
+              <X className="size-4 me-2" />
+              Clear All
+            </Button>
           </div>
 
           <div className="space-y-3">
