@@ -13,7 +13,7 @@ export const formatFileSize = (bytes: number): string => {
  */
 export const formatNumberToRanges = (numbers: number[], minLength = 5) => {
   if (!numbers || numbers.length === 0) return '';
-  if (numbers.length === 1 || numbers.length <= minLength) return numbers.join(",  ");
+  if (numbers.length === 1 || numbers.length <= minLength) return numbers.join(", ");
 
   const ranges = [];
   let start = 0;

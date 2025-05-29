@@ -116,12 +116,10 @@ export function FileList({
                   <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2">
                     <span className="text-xs sm:text-sm text-zinc-400">Pages:</span>
                     <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
-                      <pre>
-                        {file.selectedPages.length === file.pages
-                          ? "All"
-                          : formatNumberToRanges(file.selectedPages.map((page) => page + 1)) ||
-                            "None"}
-                      </pre>
+                      {file.selectedPages.length === file.pages
+                        ? "All"
+                        : formatNumberToRanges(file.selectedPages.map((page) => page + 1)) ||
+                          "None"}
                     </Badge>
                     <Button
                       variant="ghost"
