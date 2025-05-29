@@ -21,7 +21,7 @@ export default function Component() {
   } = usePDFMerger();
 
   return (
-    <div className="max-w-4xl mx-auto py-12 sm:pt-30 space-y-8 sm:space-y-12">
+    <div className="max-w-4xl mx-auto py-12 sm:pt-30 space-y-12 sm:space-y-24">
       <Header />
       <FileUpload onFileSelect={handleFileSelection} />
       <FileList

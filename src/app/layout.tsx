@@ -7,22 +7,30 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PDF Merger - Free Online Tool",
+  title: "PDF Utility - Free Online PDF Tools",
   description:
-    "Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
-  keywords: ["PDF merger", "PDF combiner", "merge PDF", "combine PDF", "PDF tool", "free PDF tool"],
+    "Free online PDF Utility for combining multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+  keywords: [
+    "PDF utility",
+    "PDF merger",
+    "PDF combiner",
+    "merge PDF",
+    "combine PDF",
+    "PDF tool",
+    "free PDF tool",
+  ],
   authors: [{ name: "PDF Utility" }],
   openGraph: {
-    title: "PDF Merger - Merge PDF Files Online",
+    title: "PDF Utility - Free Online PDF Tools",
     description:
-      "Free online PDF merger tool. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+      "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PDF Merger - Merge PDF Files Online",
+    title: "PDF Utility - Free Online PDF Tools",
     description:
-      "Free online PDF merger tool. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+      "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
   },
   robots: {
     index: true,
@@ -33,9 +41,9 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "PDF Merger",
+  name: "PDF Utility",
   description:
-    "Free online PDF merger tool. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+    "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Any",
   offers: {
@@ -74,7 +82,8 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} min-h-dvh bg-zinc-950 relative p-4`}>
-        <div className="absolute inset-0 bg-[radial-gradient(#3f69956a_1px,transparent_0px)] bg-[size:18px_18px] sm:bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)]"></div>
+        <div className="relative w-full h-fit overflow-x-hidden"></div>
         <div className="relative">{children}</div>
         <Toaster position="top-right" expand richColors closeButton />
       </body>
