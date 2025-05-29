@@ -23,6 +23,22 @@ const DEFAULT_MERGED_FILE = {
   pages: 0,
 };
 
+const scrollIntoView = (
+  selector: string,
+  option: ScrollIntoViewOptions = {
+    behavior: "smooth",
+    block: "center",
+    inline: "nearest",
+  }
+) => {
+  setTimeout(() => {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.scrollIntoView(option);
+    }
+  }, 100);
+};
+
 export default function Component() {
   const [files, setFiles] = useState<PDFFileWithPages[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -60,12 +76,17 @@ export default function Component() {
         pages: pdf.getPageCount(),
       });
 
-      toast.success("PDFs merged successfully!");
+      // toast.success("PDFs merged successfully!");
     } catch (error) {
       console.error("Error:", error);
       toast.error("Failed to merge PDFs. Please try again.");
     } finally {
       setIsProcessing(false);
+      scrollIntoView("#merged-pdf-preview", {
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
     }
   };
 
@@ -111,6 +132,8 @@ export default function Component() {
     setMergedFile(DEFAULT_MERGED_FILE); // resetting merged file's preview
 
     toast.success(`Added ${newFiles.length} PDF file${newFiles.length > 1 ? "s" : ""}`);
+
+    scrollIntoView("#merge-button");
   };
 
   const handleDownload = () => {
@@ -309,6 +332,7 @@ export default function Component() {
           {/* Merge Button */}
           <div className="flex justify-center pt-4">
             <Button
+              id="merge-button"
               size="lg"
               onClick={handleMerge}
               disabled={isProcessing}
@@ -331,7 +355,9 @@ export default function Component() {
 
       {mergedFile?.previewUrl && (
         <>
-          <h3 className="text-white font-bold text-center">Merged Document</h3>
+          <h3 id="merged-pdf-preview" className="text-white font-bold text-center">
+            Merged Document
+          </h3>
 
           <div className="space-y-4">
             {/* File Info */}
@@ -369,7 +395,6 @@ export default function Component() {
               </Button>
             </div>
 
-            {/* Preview Area */}
             {/* PDF Preview */}
             <iframe
               src={mergedFile.previewUrl}
