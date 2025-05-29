@@ -129,16 +129,16 @@ export default function Component() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pt-10 sm:py-40 space-y-8">
+    <div className="max-w-4xl mx-auto pt-6 sm:py-40 space-y-6 sm:space-y-8">
       {/* Header */}
-      <header className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3">
-          <h1 className="text-3xl font-bold text-zinc-100 text-balance">PDF Merger</h1>
+      <header className="text-center space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-center gap-2 sm:gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-100 text-balance">PDF Merger</h1>
           <Badge variant="secondary" className="text-xs bg-zinc-800 text-zinc-300">
             Free Tool
           </Badge>
         </div>
-        <p className="text-zinc-400 max-w-2xl mx-auto text-pretty">
+        <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto text-pretty">
           Combine multiple PDF files into one document. Select pages, preview, and download
           instantly.
         </p>
@@ -155,16 +155,16 @@ export default function Component() {
         onDrop={handleDrop}
         onClick={handleButtonClick}
       >
-        <CardContent className="p-8">
-          <div className="text-center space-y-4">
+        <CardContent className="p-4 sm:p-8">
+          <div className="text-center space-y-3 sm:space-y-4">
             <div
               className={cn(
-                "size-16 mx-auto rounded-full flex items-center justify-center transition-colors bg-zinc-800",
+                "size-12 sm:size-16 mx-auto rounded-full flex items-center justify-center transition-colors bg-zinc-800",
                 { "bg-blue-800": isDragOver }
               )}
             >
               <Upload
-                className={cn("size-8 transition-colors text-blue-400", {
+                className={cn("size-6 sm:size-8 transition-colors text-blue-400", {
                   "text-blue-300": isDragOver,
                 })}
               />
@@ -172,7 +172,7 @@ export default function Component() {
             <div>
               <Button
                 size="lg"
-                className="mb-2 bg-blue-600 hover:bg-blue-700"
+                className="mb-2 bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleButtonClick();
@@ -201,7 +201,7 @@ export default function Component() {
       {files && files.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-zinc-100">
+            <h2 className="text-lg sm:text-xl font-semibold text-zinc-100">
               Selected Files ({files?.length || 0})
             </h2>
           </div>
@@ -209,19 +209,21 @@ export default function Component() {
           <div className="space-y-3">
             {(files || []).map((file) => (
               <Card key={file.id} className="overflow-hidden bg-zinc-900/80 border-zinc-800">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-start gap-3 sm:gap-4">
                     {/* File Icon */}
-                    <div className="size-12 bg-zinc-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <FileText className="size-6 text-red-400" />
+                    <div className="size-10 sm:size-12 bg-zinc-800 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <FileText className="size-5 sm:size-6 text-red-400" />
                     </div>
 
                     {/* File Info */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start justify-between gap-2 sm:gap-4">
                         <div className="min-w-0 flex-1">
-                          <h3 className="font-medium text-zinc-100 truncate">{file.name}</h3>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-zinc-400">
+                          <h3 className="font-medium text-zinc-100 truncate text-sm sm:text-base">
+                            {file.name}
+                          </h3>
+                          <div className="flex items-center gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-zinc-400">
                             <span>{file.size}</span>
                             <span>
                               {file.pages} page{file.pages > 1 ? "s" : ""}
@@ -232,15 +234,15 @@ export default function Component() {
                           variant="ghost"
                           size="sm"
                           onClick={() => removeFile(file.id)}
-                          className="text-zinc-500 hover:text-red-400 hover:bg-zinc-800"
+                          className="text-zinc-500 hover:text-red-400 hover:bg-zinc-800 -mt-1 -mr-1"
                         >
                           <X className="size-4" />
                         </Button>
                       </div>
 
                       {/* Page Selection */}
-                      <div className="mt-3 flex items-center gap-2">
-                        <span className="text-sm text-zinc-400">Pages:</span>
+                      <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2">
+                        <span className="text-xs sm:text-sm text-zinc-400">Pages:</span>
                         <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
                           {file.selectedPages.length === file.pages
                             ? "All"
@@ -257,9 +259,9 @@ export default function Component() {
                     </div>
 
                     {/* Preview Thumbnail */}
-                    <div className="w-16 h-20 bg-zinc-800 border border-zinc-700 rounded shadow-sm flex items-center justify-center flex-shrink-0">
-                      <div className="w-12 h-16 bg-zinc-700 rounded flex items-center justify-center">
-                        <FileText className="size-6 text-zinc-500" />
+                    <div className="w-12 sm:w-16 h-16 sm:h-20 bg-zinc-800 border border-zinc-700 rounded shadow-sm flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 sm:w-12 h-12 sm:h-16 bg-zinc-700 rounded flex items-center justify-center">
+                        <FileText className="size-4 sm:size-6 text-zinc-500" />
                       </div>
                     </div>
                   </div>
@@ -274,7 +276,7 @@ export default function Component() {
               size="lg"
               onClick={handleMerge}
               disabled={isProcessing}
-              className="px-8 bg-blue-600 hover:bg-blue-700"
+              className="w-full sm:w-auto px-8 bg-blue-600 hover:bg-blue-700"
             >
               {isProcessing ? (
                 <>
@@ -293,10 +295,10 @@ export default function Component() {
       {mergedFile?.previewUrl && (
         <>
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-zinc-100">Merged PDF Preview</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-zinc-100">Merged PDF Preview</h2>
 
             {/* File Name Input */}
-            <div className="flex items-center gap-3 max-w-md">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 max-w-md">
               <label className="text-sm font-medium text-zinc-300 whitespace-nowrap">
                 File name:
               </label>
@@ -306,7 +308,7 @@ export default function Component() {
                 className="flex-1 bg-zinc-800 border-zinc-700 text-zinc-200 focus-visible:ring-blue-500 focus-visible:border-blue-500"
               />
               <Button
-                className="whitespace-nowrap bg-blue-600 hover:bg-blue-700"
+                className="w-full sm:w-auto whitespace-nowrap bg-blue-600 hover:bg-blue-700"
                 onClick={handleDownload}
               >
                 <Download className="size-4 me-2" />
@@ -317,7 +319,7 @@ export default function Component() {
             {/* PDF Preview */}
             <iframe
               src={mergedFile.previewUrl}
-              className="w-full h-[600px] border-0 rounded-lg"
+              className="w-full h-[400px] sm:h-[600px] border-0 rounded-lg"
               title="Preview of merged PDF"
             />
           </div>
