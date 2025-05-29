@@ -150,7 +150,7 @@ export function FileList({
                     {file.pages === file.selectedPages.length ? "Unselect" : "Select"} All Pages
                   </Button>
                   <div className="w-full overflow-x-auto scrollbar-thin">
-                    <ul className="min-w-min flex gap-4 pb-4">
+                    <ul className="min-w-min flex items-center gap-4 pb-4">
                       {Array.from({ length: file.pages }, (_, i) => i).map((pageNum) => (
                         <li
                           key={pageNum}

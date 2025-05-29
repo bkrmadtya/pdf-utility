@@ -66,7 +66,7 @@ export function MergedPDFPreview({
         {/* PDF Preview */}
         <iframe
           src={previewUrl}
-          className="w-full h-[400px] sm:h-[600px] border-0 rounded-lg"
+          className="w-full hidden sm:block h-[400px] sm:h-[600px] border-0 rounded-lg"
           title="Preview of merged PDF"
         />
       </div>
