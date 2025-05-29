@@ -73,8 +73,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen bg-zinc-950 relative`}>
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293bab_1px,transparent_1px),linear-gradient(to_bottom,#1e293bab_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,#000_70%,transparent_100%)]"></div>
+      <body className={`${inter.className} min-h-dvh bg-zinc-950 relative p-4`}>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b68_1px,transparent_1px),linear-gradient(to_bottom,#1e293b68_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_45%_45%_at_50%_30%,#000_70%,transparent_100%)]"></div>
         <div className="relative">{children}</div>
         <Toaster />
       </body>

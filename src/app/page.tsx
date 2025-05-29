@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const DEFAULT_MERGED_FILE = {
   blob: new Blob(),
@@ -128,7 +129,7 @@ export default function Component() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-40 space-y-8">
+    <div className="max-w-4xl mx-auto pt-10 sm:py-40 space-y-8">
       {/* Header */}
       <header className="text-center space-y-4">
         <div className="flex items-center justify-center gap-3">
@@ -145,11 +146,10 @@ export default function Component() {
 
       {/* File Upload Area */}
       <Card
-        className={`border-2 border-dashed transition-colors cursor-pointer ${
-          isDragOver
-            ? "border-blue-500 bg-blue-950/20"
-            : "border-zinc-800 hover:border-zinc-700 bg-zinc-900"
-        }`}
+        className={cn(
+          "border-2 border-dashed transition-colors cursor-pointer border-zinc-800 hover:border-zinc-700 bg-zinc-900/80",
+          { "border-blue-500 bg-blue-950/40": isDragOver }
+        )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -158,14 +158,15 @@ export default function Component() {
         <CardContent className="p-8">
           <div className="text-center space-y-4">
             <div
-              className={`size-16 mx-auto rounded-full flex items-center justify-center transition-colors ${
-                isDragOver ? "bg-blue-800" : "bg-zinc-800"
-              }`}
+              className={cn(
+                "size-16 mx-auto rounded-full flex items-center justify-center transition-colors bg-zinc-800",
+                { "bg-blue-800": isDragOver }
+              )}
             >
               <Upload
-                className={`size-8 transition-colors ${
-                  isDragOver ? "text-blue-300" : "text-blue-400"
-                }`}
+                className={cn("size-8 transition-colors text-blue-400", {
+                  "text-blue-300": isDragOver,
+                })}
               />
             </div>
             <div>
@@ -207,7 +208,7 @@ export default function Component() {
 
           <div className="space-y-3">
             {(files || []).map((file) => (
-              <Card key={file.id} className="overflow-hidden bg-zinc-900 border-zinc-800">
+              <Card key={file.id} className="overflow-hidden bg-zinc-900/80 border-zinc-800">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
                     {/* File Icon */}
