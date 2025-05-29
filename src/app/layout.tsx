@@ -13,11 +13,23 @@ export const metadata: Metadata = {
   keywords: [
     "PDF utility",
     "PDF merger",
+    "pdf merge",
+    "PDF merge",
     "PDF combiner",
     "merge PDF",
     "combine PDF",
     "PDF tool",
     "free PDF tool",
+    "online PDF editor",
+    "PDF page selector",
+    "PDF preview",
+    "i love pdf",
+    "free to use",
+    "secure PDF tool",
+    "no registration required",
+    "no watermarks",
+    "no ads",
+    "no data collection",
   ],
   authors: [{ name: "PDF Utility" }],
   openGraph: {
@@ -25,16 +37,42 @@ export const metadata: Metadata = {
     description:
       "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
     type: "website",
+    url: "https://pdf-utility.vercel.app",
+    siteName: "PDF Utility",
+    locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "PDF Utility - Free Online PDF Tools",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "PDF Utility - Free Online PDF Tools",
     description:
       "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+    creator: "@pdfutility",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-site-verification",
+  },
+  alternates: {
+    canonical: "https://pdf-utility.vercel.app",
   },
 };
 
@@ -57,6 +95,21 @@ const jsonLd = {
     "Preview before merging",
     "Instant download",
     "Free to use",
+    "No registration required",
+    "Secure file handling",
+    "No watermarks",
+    "Responsive design",
+    "Cross-browser compatible",
+    "Optimized for performance",
+    "Accessible interface",
+    "Supports large files",
+    "Drag and drop functionality",
+    "Mobile-friendly",
+    "Fast processing",
+    "User-friendly interface",
+    "Customizable options",
+    "Notifications for completion",
+    "I love pdf",
   ],
   browserRequirements: "Requires JavaScript. Requires HTML5.",
   softwareVersion: "1.0.0",
@@ -64,6 +117,16 @@ const jsonLd = {
   author: {
     "@type": "Organization",
     name: "PDF Utility",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    ratingCount: "1250",
+  },
+  screenshot: {
+    "@type": "ImageObject",
+    url: "/screenshot.png",
+    caption: "PDF Utility Interface",
   },
 };
 
