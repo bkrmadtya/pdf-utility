@@ -1,4 +1,4 @@
-import { FileText, X, RotateCcw } from "lucide-react";
+import { FileText, X, RotateCcw, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,13 +41,12 @@ export function FileList({
       <div className="space-y-3">
         {files.map((file) => (
           <Card key={file.id} className="overflow-hidden bg-zinc-900/80 border-zinc-800">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent>
               <div className="flex items-start gap-3 sm:gap-4">
                 {/* File Icon */}
                 <div className="size-10 sm:size-12 bg-zinc-800 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <FileText className="size-5 sm:size-6 text-red-400" />
+                  <FileText className="size-5 sm:size-6 text-blue-400" />
                 </div>
-
                 {/* File Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 sm:gap-4">
@@ -66,9 +65,9 @@ export function FileList({
                       variant="ghost"
                       size="sm"
                       onClick={() => onRemoveFile(file.id)}
-                      className="text-zinc-500 hover:text-red-400 hover:bg-zinc-800 -mt-1 -mr-1"
+                      className="hover:bg-zinc-800 -mt-1 -mr-1"
                     >
-                      <X className="size-4" />
+                      <Trash className="size-4 text-red-400 font-bold" />
                     </Button>
                   </div>
 
@@ -88,14 +87,7 @@ export function FileList({
                       Select Pages
                     </Button>
                   </div>
-                </div>
-
-                {/* Preview Thumbnail */}
-                <div className="w-12 sm:w-16 h-16 sm:h-20 bg-zinc-800 border border-zinc-700 rounded shadow-sm flex items-center justify-center flex-shrink-0">
-                  <div className="w-8 sm:w-12 h-12 sm:h-16 bg-zinc-700 rounded flex items-center justify-center">
-                    <FileText className="size-4 sm:size-6 text-zinc-500" />
-                  </div>
-                </div>
+                </div>{" "}
               </div>
             </CardContent>
           </Card>
