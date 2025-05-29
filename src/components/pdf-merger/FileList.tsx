@@ -7,6 +7,7 @@ import { useState } from "react";
 import PDFPreview from "@/components/PDFPreview";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { formatNumberToRanges } from "@/utils/format";
 
 interface FileListProps {
   files: PDFFileWithPages[];
@@ -115,9 +116,12 @@ export function FileList({
                   <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2">
                     <span className="text-xs sm:text-sm text-zinc-400">Pages:</span>
                     <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-300">
-                      {file.selectedPages.length === file.pages
-                        ? "All"
-                        : file.selectedPages.map((page) => page + 1).join(", ") || "None"}
+                      <pre>
+                        {file.selectedPages.length === file.pages
+                          ? "All"
+                          : formatNumberToRanges(file.selectedPages.map((page) => page + 1)) ||
+                            "None"}
+                      </pre>
                     </Badge>
                     <Button
                       variant="ghost"
