@@ -154,9 +154,10 @@ export default function RootLayout({
       <body
         className={`${inter.className} relative min-h-dvh bg-zinc-950 p-4 py-14 sm:pt-30 space-y-12 sm:space-y-24`}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)]"></div>
+        {/* Background gradient */}
+        <div className="absolute inset-0  bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)] -z-10" />
         <Header />
-        <main className="max-w-4xl mx-auto">{children}</main>
+        <main className="max-w-4xl mx-auto space-y-12">{children}</main>
         <Footer />
         <Toaster position="top-right" expand richColors closeButton />
       </body>

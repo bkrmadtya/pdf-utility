@@ -90,7 +90,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
         />
       </CardContent>
       <div className="size-[200px] sm:size-[500px] absolute -top-1/2 right-0 -translate-x-3.5 -translate-y-1/3 sm:-translate-y-1/2 rounded-full bg-[radial-gradient(circle_farthest-side,#00bbff17,transparent)] -z-10" />
-      <div className="size-[200px] sm:size-[500px] absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2 rounded-full bg-[radial-gradient(circle_farthest-side,#ff00b712,transparent)] -z-10"></div>
+      <div className="size-[200px] sm:size-[500px] absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2 rounded-full bg-[radial-gradient(circle_farthest-side,#ff00b712,transparent)] animate-pulse [animation-duration:3s] -z-10"></div>
     </Card>
   );
 }
