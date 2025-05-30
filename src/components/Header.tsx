@@ -6,7 +6,7 @@ const Header = () => {
       <div className="flex items-center justify-center gap-2 sm:gap-4">
         <h1
           id="title"
-          className="relative group text-2xl sm:text-4xl font-bold text-zinc-100 text-balance"
+          className="relative group text-2xl sm:text-4xl font-bold [text-shadow:white_0_0_5px] text-zinc-100 text-balance"
         >
           PDF Utility
           <div className="group-hover:opacity-65 absolute inset-y-2 -inset-x-2 bg-gradient-to-r from-blue-600/80 to-pink-600/60 rounded-3xl blur-lg animate-pulse [animation-timing-function:ease-in-out] [animation-duration:3s] -z-10" />
