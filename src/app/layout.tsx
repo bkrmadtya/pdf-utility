@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://bkrmadtya.github.io/pdf-utility/"),
   title: "PDF Utility - Free Online PDF Tools",
   description:
     "Free online PDF Utility for combining multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
