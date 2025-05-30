@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/og-image.png",
+        url: "/icon.svg",
         width: 1200,
         height: 630,
         alt: "PDF Utility - Free Online PDF Tools",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     description:
       "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
     creator: "@pdfutility",
-    images: ["/og-image.png"],
+    images: ["/icon.svg"],
   },
   robots: {
     index: true,
@@ -74,6 +74,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://pdf-utility.vercel.app",
+  },
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
   },
 };
 
