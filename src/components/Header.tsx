@@ -16,7 +16,8 @@ const Header = () => {
         </Badge>
       </div>
       <p className="text-sm sm:text-lg text-zinc-400 max-w-2xl mx-auto text-pretty">
-        Combine multiple PDF files into one document. Select pages, preview, and download instantly.
+        Merge multiple PDF files. Customize page selection, preview the output, and download with
+        one click.
       </p>
     </header>
   );
