@@ -1,72 +1,75 @@
+import { FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { formatFileSize } from "@/utils/format";
-import { RefObject } from "react";
 
 interface MergedPDFPreviewProps {
-  mergedPreviewUrl: string;
-  mergedBlob: Blob | null;
-  mergedFileNameRef: RefObject<HTMLInputElement | null>;
+  previewUrl: string;
+  name: string;
+  size: string;
+  pages: number;
+  onNameChange: (name: string) => void;
   onDownload: () => void;
 }
 
-const MergedPDFPreview = ({
-  mergedPreviewUrl,
-  mergedBlob,
-  mergedFileNameRef,
+export function MergedPDFPreview({
+  previewUrl,
+  name,
+  size,
+  pages,
+  onNameChange,
   onDownload,
-}: MergedPDFPreviewProps) => {
+}: MergedPDFPreviewProps) {
+  if (!previewUrl) return null;
+
   return (
-    <Card className="mt-8">
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Merged PDF</CardTitle>
-            <CardDescription>Preview and download your merged PDF</CardDescription>
+    <>
+      <h3 id="merged-pdf-preview" className="text-white font-bold text-center">
+        Merged Document
+      </h3>
+
+      <div className="space-y-4">
+        {/* File Info */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-blue-100 border border-blue-600 rounded-lg">
+          <div className="flex items-center gap-4">
+            <div className="size-14 bg-blue-200 rounded-lg flex items-center justify-center">
+              <FileText className="size-6 text-blue-600" />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-1 font-semibold">
+                <Input
+                  defaultValue={name || "merged-document.pdf"}
+                  onChange={(e) => onNameChange(e.target.value)}
+                  className="h-7 text-xs sm:text-sm text-zinc-800 font-medium bg-white/90 focus-visible:ring-1 focus-visible:ring-blue-600  border-none px-2 shadow-none max-w-fit"
+                />
+                <span className="text-xs sm:text-sm font-medium text-blue-800  flex-shrink-0">
+                  .pdf
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-blue-800">
+                {size} <span className="mx-1">•</span> {pages} page
+                {pages > 1 ? "s" : ""}
+              </p>
+            </div>
           </div>
-          {mergedBlob && (
-            <Badge variant="secondary" className="bg-gray-700 text-gray-200">
-              Size: {formatFileSize(mergedBlob.size)}
-            </Badge>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex items-center gap-2 flex-1">
-            <Label htmlFor="merged-filename" className="text-sm font-medium text-gray-100">
-              File name:
-            </Label>
-            <Input
-              id="merged-filename"
-              type="text"
-              ref={mergedFileNameRef}
-              defaultValue="merged.pdf"
-              className="flex-1 bg-gray-800 border-gray-700 text-gray-100 placeholder:text-gray-500"
-              placeholder="merged.pdf"
-            />
-          </div>
+
           <Button
+            size="sm"
+            className="max-w-32 ml-auto sm:mx-0 px-8 bg-black hover:bg-black/80"
+            type="button"
             onClick={onDownload}
-            variant="default"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            Download Merged PDF
+            <Download className="w-4 h-4 mr-2" />
+            Download
           </Button>
         </div>
-        <div className="h-[600px] w-full bg-gray-800/50 rounded-lg border border-gray-700">
-          <iframe
-            src={mergedPreviewUrl}
-            className="w-full h-full border-0 rounded-lg"
-            title="Preview of merged PDF"
-          />
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
 
-export default MergedPDFPreview;
+        {/* PDF Preview */}
+        <iframe
+          src={previewUrl}
+          className="w-full hidden sm:block h-[400px] sm:h-[600px] border-0 rounded-lg"
+          title="Preview of merged PDF"
+        />
+      </div>
+    </>
+  );
+}

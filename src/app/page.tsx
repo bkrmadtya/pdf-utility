@@ -1,8 +1,8 @@
 "use client";
 
-import { FileUpload } from "@/components/pdf-merger/FileUpload";
-import { FileList } from "@/components/pdf-merger/FileList";
-import { MergedPDFPreview } from "@/components/pdf-merger/MergedPDFPreview";
+import { FileUpload } from "@/components/FileUpload";
+import { FileList } from "@/components/FileList";
+import { MergedPDFPreview } from "@/components/MergedPDFPreview";
 import { usePDFMerger } from "@/hooks/usePDFMerger";
 
 export default function Component() {
