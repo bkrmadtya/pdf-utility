@@ -189,7 +189,7 @@ export function FileList({
           id="merge-button"
           size="lg"
           onClick={onMerge}
-          disabled={isProcessing}
+          disabled={isProcessing || !files.some((file) => file.selectedPages.length > 0)}
           className="w-full sm:w-auto px-8 bg-blue-600 hover:bg-blue-700"
         >
           {isProcessing ? (
