@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 
-export function Header() {
+const Header = () => {
   return (
     <header className="text-center space-y-8">
       <div className="flex items-center justify-center gap-2 sm:gap-4">
@@ -20,4 +20,6 @@ export function Header() {
       </p>
     </header>
   );
-}
+};
+
+export default Header;

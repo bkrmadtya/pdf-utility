@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
+import Header from "@/components/pdf-merger/Header";
+import Footer from "@/components/pdf-merger/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -149,10 +151,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.className} min-h-dvh bg-zinc-950 relative p-4`}>
+      <body
+        className={`${inter.className} relative min-h-dvh bg-zinc-950 p-4 py-14 sm:pt-30 space-y-12 sm:space-y-24`}
+      >
         <div className="absolute inset-0 bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)]"></div>
-        <div className="relative w-full h-fit overflow-x-hidden"></div>
-        <div className="relative">{children}</div>
+        <Header />
+        <main className="max-w-4xl mx-auto">{children}</main>
+        <Footer />
         <Toaster position="top-right" expand richColors closeButton />
       </body>
     </html>
