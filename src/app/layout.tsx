@@ -152,12 +152,14 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.className} relative min-h-dvh bg-zinc-950 p-4 py-14 sm:pt-30 space-y-12 sm:space-y-24`}
+        className={`${inter.className} relative flex flex-col min-h-dvh bg-zinc-950 p-4 py-14 sm:pt-30`}
       >
         {/* Background gradient */}
-        <div className="absolute inset-0  bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)] -z-10" />
+        <div className="absolute inset-0 bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)] -z-10" />
         <Header />
-        <main className="max-w-4xl mx-auto space-y-12">{children}</main>
+        <main className="flex-grow w-full max-w-4xl mx-auto my-12 sm:my-24 space-y-12">
+          {children}
+        </main>
         <Footer />
         <Toaster position="top-right" expand richColors closeButton />
       </body>
