@@ -4,6 +4,7 @@ import { PDFDocument } from "pdf-lib";
 import { formatFileSize } from "@/utils/format";
 import { generateRandomId } from "@/utils/generateRandomId";
 import { mergePDFs, PDFFileWithPages } from "@/utils/pdfMerger";
+import { convertImageToPDF, isImageFile } from "@/utils/imageConverter";
 
 
 type MergedFile = {
@@ -53,47 +54,50 @@ export function usePDFMerger() {
 
   const handleFileSelection = async (selectedFiles: FileList | null) => {
     if (!selectedFiles || selectedFiles?.length === 0) {
-      toast.error("Please select PDF files to merge.");
+      toast.error("Please select PDF or image files to merge.");
       return;
-    }
-
-    const filteredValidFiles = Array.from(selectedFiles).filter(
-      (file) => file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
-    );
-
-    if (filteredValidFiles.length === 0) {
-      toast.error("No valid PDF files selected. Please select PDF files only.");
-      return;
-    }
-
-    const areAllFilesValid = filteredValidFiles.length === selectedFiles.length;
-    if (!areAllFilesValid) {
-      toast.error("Invalid file type detected. Please select PDF files only.");
     }
 
     const newFiles: PDFFileWithPages[] = [];
     await Promise.allSettled(
       Array.from(selectedFiles).map(async (file) => {
-        const pdf = await PDFDocument.load(await file.arrayBuffer());
-        const pages = pdf.getPageCount();
+        let pdf: PDFDocument;
+        let arrayBuffer: ArrayBuffer;
+
+        if (isImageFile(file)) {
+          // Convert image to PDF
+          const pdfBytes = await convertImageToPDF(file);
+          arrayBuffer = new ArrayBuffer(pdfBytes.byteLength);
+          new Uint8Array(arrayBuffer).set(pdfBytes);
+          pdf = await PDFDocument.load(arrayBuffer);
+        } else if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+          // Handle PDF file
+          arrayBuffer = await file.arrayBuffer();
+          pdf = await PDFDocument.load(arrayBuffer);
+        } else {
+          toast.error(`Unsupported file type: ${file.name}`);
+          return;
+        }
 
         const newFile: PDFFileWithPages = {
-          file,
+          file: new File([arrayBuffer], file.name.replace(/\.[^/.]+$/, '.pdf'), { type: 'application/pdf' }),
           id: generateRandomId(),
           name: file.name,
           pages: pdf.getPageCount(),
-          selectedPages: pages ? pdf.getPageIndices() : [],
-          size: formatFileSize(file.size),
+          selectedPages: pdf.getPageIndices(),
+          size: formatFileSize(arrayBuffer.byteLength),
         };
 
         newFiles.push(newFile);
       })
     );
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    setMergedFile(DEFAULT_MERGED_FILE);
 
-    toast.success(`Added ${newFiles.length} PDF file${newFiles.length > 1 ? "s" : ""}`);
-    scrollIntoView("#merge-button");
+    if (newFiles.length > 0) {
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      setMergedFile(DEFAULT_MERGED_FILE);
+      toast.success(`Added ${newFiles.length} file${newFiles.length > 1 ? "s" : ""}`);
+      scrollIntoView("#merge-button");
+    }
   };
 
   const handleMerge = async () => {

@@ -3,6 +3,7 @@ import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { SUPPORTED_IMAGE_FORMATS, ACCEPTED_FILE_TYPES } from "@/utils/imageConverter";
 
 interface FileUploadProps {
   onFileSelect: (files: FileList | null) => void;
@@ -72,18 +73,20 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
                 handleButtonClick();
               }}
             >
-              Choose PDF Files
+              Choose Files
             </Button>
             <p className="text-sm text-zinc-400">
-              {isDragOver ? "Drop your PDF files here" : "or drag and drop your files here"}
+              {isDragOver ? "Drop your files here" : "or drag and drop your files here"}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">Supports multiple PDF files</p>
+            <p className="text-xs text-zinc-500 mt-1">
+              Supports PDF and image files ({SUPPORTED_IMAGE_FORMATS.join(", ")})
+            </p>
           </div>
         </div>
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf,application/pdf"
+          accept={ACCEPTED_FILE_TYPES}
           multiple
           onChange={handleFileInputChange}
           className="hidden"
