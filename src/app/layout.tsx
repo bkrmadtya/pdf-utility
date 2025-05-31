@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://bkrmadtya.github.io/pdf-utility/"),
   title: "PDF Utility - Free Online PDF Tools",
   description:
-    "Free online PDF Utility for combining multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+    "Free online PDF Utility for combining multiple PDF files into one document and converting images to PDF. Select specific pages, preview before merging, and download instantly.",
   keywords: [
     "PDF utility",
     "PDF merger",
@@ -26,6 +26,13 @@ export const metadata: Metadata = {
     "online PDF editor",
     "PDF page selector",
     "PDF preview",
+    "image to PDF",
+    "convert image to PDF",
+    "JPG to PDF",
+    "JPEG to PDF",
+    "PNG to PDF",
+    "WebP to PDF",
+    "GIF to PDF",
     "i love pdf",
     "free to use",
     "secure PDF tool",
@@ -38,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PDF Utility - Free Online PDF Tools",
     description:
-      "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+      "Free online PDF Utility. Combine multiple PDF files into one document and convert images to PDF. Select specific pages, preview before merging, and download instantly.",
     type: "website",
     url: "https://pdf-utility.vercel.app",
     siteName: "PDF Utility",
@@ -56,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PDF Utility - Free Online PDF Tools",
     description:
-      "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+      "Free online PDF Utility. Combine multiple PDF files into one document and convert images to PDF. Select specific pages, preview before merging, and download instantly.",
     creator: "@pdfutility",
     images: ["/icon.svg"],
   },
@@ -88,7 +95,7 @@ const jsonLd = {
   "@type": "WebApplication",
   name: "PDF Utility",
   description:
-    "Free online PDF Utility. Combine multiple PDF files into one document. Select specific pages, preview before merging, and download instantly.",
+    "Free online PDF Utility. Combine multiple PDF files into one document and convert images to PDF. Select specific pages, preview before merging, and download instantly.",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Any",
   offers: {
@@ -98,6 +105,8 @@ const jsonLd = {
   },
   featureList: [
     "Merge multiple PDF files",
+    "Convert images to PDF",
+    "Support for JPG, JPEG, PNG, WebP, and GIF formats",
     "Select specific pages",
     "Preview before merging",
     "Instant download",
