@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 interface PDFPreviewProps {
   file: File;
   pageNumber: number;
+  scaleFactor?: number;
 }
 
-const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
+const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const renderTaskRef = useRef<RenderTask | null>(null);
@@ -61,19 +62,14 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
 
         if (!isMounted) return;
 
-        const SCALE_FACTOR = 0.1; // Use a lower scale factor for better performance
-
         // Get the original page dimensions
-        const viewport = page.getViewport({ scale: SCALE_FACTOR });
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d", { alpha: false }); // Optimize for PDF rendering
 
         if (!context) return;
 
         // Calculate the scale to fit the container width while maintaining aspect ratio
-        const containerWidth = containerRef.current.clientWidth;
-        const scale = (containerWidth / viewport.width) * SCALE_FACTOR;
-        const scaledViewport = page.getViewport({ scale });
+        const scaledViewport = page.getViewport({ scale: scaleFactor });
 
         // Set canvas dimensions to match the scaled viewport
         canvas.height = scaledViewport.height;
@@ -119,13 +115,13 @@ const PDFPreview = memo(({ file, pageNumber }: PDFPreviewProps) => {
         renderTaskRef.current.cancel();
       }
     };
-  }, [file, pageNumber, isVisible]);
+  }, [file, pageNumber, isVisible, scaleFactor]);
 
   return (
     <figure ref={containerRef} className="w-full relative">
       {isLoading && (
         <div
-          className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-sm"
+          className="absolute size-full inset-0 flex items-center justify-center bg-gray-600"
           role="status"
           aria-label="Loading PDF preview"
         >
