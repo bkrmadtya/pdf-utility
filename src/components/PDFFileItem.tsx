@@ -101,10 +101,10 @@ const PDFFileItem = ({
           {isSinglePage
             ? "Single page document (automatically selected)"
             : fileData.selectedPages.length === 0
-            ? "No pages selected (will use all pages)"
-            : `${fileData.selectedPages.length} page${
-                fileData.selectedPages.length === 1 ? "" : "s"
-              } selected`}
+              ? "No pages selected (will use all pages)"
+              : `${fileData.selectedPages.length} page${
+                  fileData.selectedPages.length === 1 ? "" : "s"
+                } selected`}
         </p>
 
         <section aria-labelledby="preview-heading">

@@ -6,7 +6,6 @@ import { generateRandomId } from "@/utils/generateRandomId";
 import { mergePDFs, PDFFileWithPages } from "@/utils/pdfMerger";
 import { convertImageToPDF, isImageFile } from "@/utils/imageConverter";
 
-
 type MergedFile = {
   previewUrl: string;
 } & PDFFileWithPages;
@@ -80,7 +79,9 @@ export const usePDFMerger = () => {
         }
 
         const newFile: PDFFileWithPages = {
-          file: new File([arrayBuffer], file.name.replace(/\.[^/.]+$/, '.pdf'), { type: 'application/pdf' }),
+          file: new File([arrayBuffer], file.name.replace(/\.[^/.]+$/, ".pdf"), {
+            type: "application/pdf",
+          }),
           id: generateRandomId(),
           name: file.name,
           pages: pdf.getPageCount(),
@@ -148,9 +149,7 @@ export const usePDFMerger = () => {
 
   const handlePageSelectionChange = (fileId: string, selectedPages: number[]) => {
     setFiles((prevFiles) =>
-      prevFiles.map((file) =>
-        file.id === fileId ? { ...file, selectedPages } : file
-      )
+      prevFiles.map((file) => (file.id === fileId ? { ...file, selectedPages } : file))
     );
   };
 
@@ -166,4 +165,4 @@ export const usePDFMerger = () => {
     setMergedFile,
     handlePageSelectionChange,
   };
-}; 
+};

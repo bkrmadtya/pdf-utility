@@ -1,4 +1,4 @@
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument } from "pdf-lib";
 
 export type PDFFileWithPages = {
   id: string;
@@ -7,7 +7,7 @@ export type PDFFileWithPages = {
   pages: number;
   selectedPages: number[];
   file: File;
-}
+};
 
 export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Array> {
   try {
@@ -28,9 +28,7 @@ export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Arra
       const pdf = await PDFDocument.load(arrayBuffer);
 
       // If no pages are selected, use all pages
-      const pagesToCopy = selectedPages.length > 0
-        ? selectedPages
-        : pdf.getPageIndices();
+      const pagesToCopy = selectedPages.length > 0 ? selectedPages : pdf.getPageIndices();
 
       // Copy selected pages from the current PDF to the merged PDF
       const copiedPages = await mergedPdf.copyPages(pdf, pagesToCopy);
@@ -40,7 +38,7 @@ export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Arra
     // Save the merged PDF
     return await mergedPdf.save();
   } catch (error) {
-    console.error('Error merging PDFs:', error);
-    throw new Error('Failed to merge PDF files');
+    console.error("Error merging PDFs:", error);
+    throw new Error("Failed to merge PDF files");
   }
-} 
+}

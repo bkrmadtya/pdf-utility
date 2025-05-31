@@ -12,7 +12,7 @@ export const formatFileSize = (bytes: number): string => {
  *      [1,2,....21, 35,...100] => `1-21, 35-100`
  */
 export const formatNumberToRanges = (numbers: number[], minLength = 5) => {
-  if (!numbers || numbers.length === 0) return '';
+  if (!numbers || numbers.length === 0) return "";
   if (numbers.length === 1 || numbers.length <= minLength) return numbers.join(", ");
 
   const ranges = [];
@@ -29,5 +29,5 @@ export const formatNumberToRanges = (numbers: number[], minLength = 5) => {
     }
   }
 
-  return ranges.join(',');
-}
+  return ranges.join(",");
+};

@@ -1,6 +1,6 @@
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   (async () => {
-    const { GlobalWorkerOptions } = await import('pdfjs-dist');
+    const { GlobalWorkerOptions } = await import("pdfjs-dist");
 
     GlobalWorkerOptions.workerSrc = new URL(
       "pdfjs-dist/build/pdf.worker.min.mjs",
