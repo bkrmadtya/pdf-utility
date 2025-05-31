@@ -1,8 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PDF Utility
+
+A modern web application built with Next.js for handling PDF operations efficiently. Visit the live application at [PDF Utility](https://bkrmadtya.github.io/pdf-utility/).
+
+![PDF Utility Icon](https://bkrmadtya.github.io/pdf-utility/icon.svg)
+
+## Features
+
+- Modern and intuitive user interface
+- Fast and efficient PDF processing
+- Built with Next.js for optimal performance
+- Responsive design for all devices
 
 ## Getting Started
 
-First, run the development server:
+First, clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/bkrmadtya/pdf-utility.git
+cd pdf-utility
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -16,21 +35,39 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technology Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [Next.js](https://nextjs.org) - React framework for production
+- [Geist Font](https://vercel.com/font) - Modern typeface for optimal readability
+- TypeScript - For type-safe code
+- Tailwind CSS - For styling
+
+## Development
+
+The project uses modern development practices and tools:
+
+- TypeScript for type safety
+- ESLint for code linting
+- Prettier for code formatting
+- Git for version control
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used in this project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
+- [Next.js GitHub Repository](https://github.com/vercel/next.js)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+This project is deployed on GitHub Pages. For more information about deployment options:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Next.js Deployment Documentation](https://nextjs.org/docs/app/building-your-application/deploying)
+- [Vercel Platform](https://vercel.com/new) - Recommended deployment platform for Next.js applications
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+Copyright © 2024 Bikram Karki. All rights reserved.
+
+This project and its contents are proprietary and confidential. Unauthorized copying, distribution, or use of this project, via any medium, is strictly prohibited.
