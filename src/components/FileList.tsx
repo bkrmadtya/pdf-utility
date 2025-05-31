@@ -9,23 +9,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { formatNumberToRanges } from "@/utils/format";
 
-interface FileListProps {
+type FileListProps = {
   files: PDFFileWithPages[];
   onRemoveFile: (id: string) => void;
   onClearAll: () => void;
   onMerge: () => void;
   isProcessing: boolean;
   onPageSelectionChange?: (fileId: string, selectedPages: number[]) => void;
-}
+};
 
-export function FileList({
+const FileList = ({
   files,
   onRemoveFile,
   onClearAll,
   onMerge,
   isProcessing,
   onPageSelectionChange,
-}: FileListProps) {
+}: FileListProps) => {
   const [expandedFileIds, setExpandedFileIds] = useState<string[]>([]);
 
   if (!files || files.length === 0) return null;
@@ -204,4 +204,6 @@ export function FileList({
       </div>
     </div>
   );
-}
+};
+
+export default FileList;

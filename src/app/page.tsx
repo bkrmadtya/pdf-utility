@@ -1,11 +1,11 @@
 "use client";
 
-import { FileUpload } from "@/components/FileUpload";
-import { FileList } from "@/components/FileList";
-import { MergedPDFPreview } from "@/components/MergedPDFPreview";
+import FileUpload from "@/components/FileUpload";
+import FileList from "@/components/FileList";
+import MergedPDFPreview from "@/components/MergedPDFPreview";
 import { usePDFMerger } from "@/hooks/usePDFMerger";
 
-export default function Component() {
+const Component = () => {
   const {
     files,
     isProcessing,
@@ -32,9 +32,11 @@ export default function Component() {
       />
       <MergedPDFPreview
         mergedFile={mergedFile}
-        onNameChange={(name) => setMergedFile((prev) => ({ ...prev, name }))}
+        onNameChange={(name: string) => setMergedFile((prev) => ({ ...prev, name }))}
         onDownload={handleDownload}
       />
     </>
   );
-}
+};
+
+export default Component;

@@ -4,11 +4,11 @@ import { RenderTask } from "pdfjs-dist";
 import "@/lib/pdfjs-worker-client"; // Import PDF.js worker configuration
 import { cn } from "@/lib/utils";
 
-interface PDFPreviewProps {
+type PDFPreviewProps = {
   file: File;
   pageNumber: number;
   scaleFactor?: number;
-}
+};
 
 const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

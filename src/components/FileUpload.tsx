@@ -5,11 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { SUPPORTED_IMAGE_FORMATS, ACCEPTED_FILE_TYPES } from "@/utils/imageConverter";
 
-interface FileUploadProps {
+type FileUploadProps = {
   onFileSelect: (files: FileList | null) => void;
-}
+};
 
-export function FileUpload({ onFileSelect }: FileUploadProps) {
+const FileUpload = ({ onFileSelect }: FileUploadProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,4 +96,6 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
       <div className="size-[200px] sm:size-[500px] absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2 rounded-full bg-[radial-gradient(circle_farthest-side,#ff00b712,transparent)] animate-pulse [animation-duration:3s] -z-10"></div>
     </Card>
   );
-}
+};
+
+export default FileUpload;

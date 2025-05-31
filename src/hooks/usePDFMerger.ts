@@ -37,7 +37,7 @@ const scrollIntoView = (
   }, 100);
 };
 
-export function usePDFMerger() {
+export const usePDFMerger = () => {
   const [files, setFiles] = useState<PDFFileWithPages[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [mergedFile, setMergedFile] = useState(DEFAULT_MERGED_FILE);
@@ -166,4 +166,4 @@ export function usePDFMerger() {
     setMergedFile,
     handlePageSelectionChange,
   };
-} 
+}; 

@@ -7,7 +7,7 @@ import { formatFileSize } from "@/utils/format";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-interface PDFFileItemProps {
+type PDFFileItemProps = {
   fileData: PDFFileWithPages;
   index: number;
   pageCount: number;
@@ -17,7 +17,7 @@ interface PDFFileItemProps {
   onTogglePageSelection: (fileIndex: number, pageNumber: number) => void;
   onSelectAllPages: (fileIndex: number) => void;
   onClearPageSelection: (fileIndex: number) => void;
-}
+};
 
 const PDFFileItem = ({
   fileData,

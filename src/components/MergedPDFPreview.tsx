@@ -10,7 +10,7 @@ type MergedPDFPreviewProps = {
   onDownload: () => void;
 };
 
-export function MergedPDFPreview({ mergedFile, onNameChange, onDownload }: MergedPDFPreviewProps) {
+const MergedPDFPreview = ({ mergedFile, onNameChange, onDownload }: MergedPDFPreviewProps) => {
   if (!mergedFile.previewUrl) return null;
 
   const name = mergedFile?.name?.replace?.(".pdf", "");
@@ -70,4 +70,6 @@ export function MergedPDFPreview({ mergedFile, onNameChange, onDownload }: Merge
       />
     </div>
   );
-}
+};
+
+export default MergedPDFPreview;

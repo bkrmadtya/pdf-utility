@@ -137,11 +137,11 @@ const jsonLd = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+type RootLayoutProps = Readonly<{
   children: React.ReactNode;
-}>) {
+}>;
+
+const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang="en" className="scrollbar-thin">
       <head>
@@ -165,4 +165,6 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
