@@ -6,7 +6,7 @@ export type PDFFileWithPages = {
   size: string;
   pages: number;
   selectedPages: number[];
-  file: File
+  file: File;
 }
 
 export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Array> {

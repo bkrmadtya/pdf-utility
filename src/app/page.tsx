@@ -31,10 +31,7 @@ export default function Component() {
         onPageSelectionChange={handlePageSelectionChange}
       />
       <MergedPDFPreview
-        previewUrl={mergedFile.previewUrl}
-        name={mergedFile.name}
-        size={mergedFile.size}
-        pages={mergedFile.pages}
+        mergedFile={mergedFile}
         onNameChange={(name) => setMergedFile((prev) => ({ ...prev, name }))}
         onDownload={handleDownload}
       />

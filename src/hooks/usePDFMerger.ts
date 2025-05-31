@@ -5,12 +5,19 @@ import { formatFileSize } from "@/utils/format";
 import { generateRandomId } from "@/utils/generateRandomId";
 import { mergePDFs, PDFFileWithPages } from "@/utils/pdfMerger";
 
-const DEFAULT_MERGED_FILE = {
-  blob: new Blob(),
+
+type MergedFile = {
+  previewUrl: string;
+} & PDFFileWithPages;
+
+const DEFAULT_MERGED_FILE: MergedFile = {
+  file: new File([], ""),
   previewUrl: "",
   name: "",
   size: "",
   pages: 0,
+  id: "",
+  selectedPages: [],
 };
 
 const scrollIntoView = (
@@ -97,13 +104,16 @@ export function usePDFMerger() {
       const pdf = await PDFDocument.load(mergedPdf);
 
       const blob = new Blob([mergedPdf], { type: "application/pdf" });
+      const file = new File([blob], "merged.pdf", { type: "application/pdf" });
       const previewUrl = URL.createObjectURL(blob);
       setMergedFile({
-        blob,
+        file,
         previewUrl,
         name: "merged",
         size: formatFileSize(blob.size),
         pages: pdf.getPageCount(),
+        id: generateRandomId(),
+        selectedPages: pdf.getPageIndices(),
       });
     } catch (error) {
       console.error("Error:", error);

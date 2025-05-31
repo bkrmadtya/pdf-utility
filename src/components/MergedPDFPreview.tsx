@@ -1,25 +1,19 @@
 import { FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PDFFileWithPages } from "@/utils/pdfMerger";
 
 interface MergedPDFPreviewProps {
-  previewUrl: string;
-  name: string;
-  size: string;
-  pages: number;
+  mergedFile: { previewUrl: string } & PDFFileWithPages;
   onNameChange: (name: string) => void;
   onDownload: () => void;
 }
 
-export function MergedPDFPreview({
-  previewUrl,
-  name,
-  size,
-  pages,
-  onNameChange,
-  onDownload,
-}: MergedPDFPreviewProps) {
-  if (!previewUrl) return null;
+export function MergedPDFPreview({ mergedFile, onNameChange, onDownload }: MergedPDFPreviewProps) {
+  if (!mergedFile.previewUrl) return null;
+
+  const name = mergedFile?.name?.replace?.(".pdf", "");
+  const pages = mergedFile.pages;
 
   return (
     <>
@@ -37,7 +31,7 @@ export function MergedPDFPreview({
             <div className="space-y-2">
               <div className="flex items-center gap-1 font-semibold">
                 <Input
-                  defaultValue={name || "merged-document.pdf"}
+                  defaultValue={name || "merged-document"}
                   onChange={(e) => onNameChange(e.target.value)}
                   className="h-7 text-xs sm:text-sm text-zinc-800 font-medium bg-white/90 focus-visible:ring-1 focus-visible:ring-blue-600  border-none px-2 shadow-none max-w-fit"
                 />
@@ -46,7 +40,7 @@ export function MergedPDFPreview({
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-blue-800">
-                {size} <span className="mx-1">•</span> {pages} page
+                {mergedFile.size} <span className="mx-1">•</span> {pages} page
                 {pages > 1 ? "s" : ""}
               </p>
             </div>
@@ -65,7 +59,7 @@ export function MergedPDFPreview({
 
         {/* PDF Preview */}
         <iframe
-          src={previewUrl}
+          src={mergedFile.previewUrl}
           className="w-full hidden sm:block h-[400px] sm:h-[600px] border-0 rounded-lg"
           title="Preview of merged PDF"
         />
