@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     description:
       "Free online PDF Utility. Combine multiple PDF files into one document and convert images to PDF. Select specific pages, preview before merging, and download instantly.",
     type: "website",
-    url: "https://pdf-utility.vercel.app",
+    url: "https://bkrmadtya.github.io/pdf-utility/",
     siteName: "PDF Utility",
     locale: "en_US",
     images: [
@@ -78,15 +78,12 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-site-verification",
-  },
   alternates: {
-    canonical: "https://pdf-utility.vercel.app",
+    canonical: "https://bkrmadtya.github.io/pdf-utility/",
   },
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
   },
 };
 
@@ -129,7 +126,7 @@ const jsonLd = {
   ],
   browserRequirements: "Requires JavaScript. Requires HTML5.",
   softwareVersion: "1.0.0",
-  url: "https://pdf-utility.vercel.app",
+  url: "https://bkrmadtya.github.io/pdf-utility/",
   author: {
     "@type": "Organization",
     name: "PDF Utility",
@@ -166,6 +163,18 @@ const RootLayout = ({ children }: RootLayoutProps) => {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(#46709c6a_1px,transparent_0px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_45%_35%_at_50%_40%,#000_60%,transparent_100%)] -z-10" />
         <Header />
+        {/* <div
+          style={{
+            color: "white",
+            fontSize: "100px",
+            fontWeight: "900",
+            fontFamily: "Arial, sans-serif",
+            textShadow: "0 0 10px #fff",
+            letterSpacing: "-10px",
+          }}
+        >
+          <p>P<sup style={{  fontSize: "50px", marginTop: "0", verticalAlign: "0.6em" }}>⛭</sup></p>
+        </div> */}
         <main className="flex-grow w-full flex flex-col max-sm:justify-center max-w-4xl mx-auto my-12 sm:my-24 space-y-12">
           {children}
         </main>
