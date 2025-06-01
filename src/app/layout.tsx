@@ -82,7 +82,7 @@ export const metadata: Metadata = {
     canonical: "https://bkrmadtya.github.io/pdf-utility/",
   },
   icons: {
-    icon: "/icon.png",
+    icon: "/pdf-utility/icon.png", // /pdf-utility is the base path
   },
 };
 
