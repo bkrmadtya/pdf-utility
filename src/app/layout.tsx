@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "no ads",
     "no data collection",
   ],
-  authors: [{ name: "PDF Utility" }],
+  authors: [{ name: "PDF Utility" }, { name: "bkrmadtya" }],
   openGraph: {
     title: "PDF Utility - Free Online PDF Tools",
     description:
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/icon.svg",
+        url: "/pdf-utility/icon.png",
         width: 1200,
         height: 630,
         alt: "PDF Utility - Free Online PDF Tools",
