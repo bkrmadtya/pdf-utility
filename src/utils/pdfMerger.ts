@@ -11,13 +11,17 @@ export type PDFFileWithPages = {
 
 export async function mergePDFs(pdfFiles: PDFFileWithPages[]): Promise<Uint8Array> {
   try {
-    // Create a new PDF document
-    const mergedPdf = await PDFDocument.create();
-
     // Filter out files with no pages selected (except single-page files)
     const filesToMerge = pdfFiles.filter(({ selectedPages, pages }) => {
       return pages === 1 || selectedPages.length > 0;
     });
+
+    if (filesToMerge.length === 0) {
+      throw new Error("No files to merge");
+    }
+
+    // Create a new PDF document
+    const mergedPdf = await PDFDocument.create();
 
     // Process each PDF file
     for (const { file, selectedPages } of filesToMerge) {
