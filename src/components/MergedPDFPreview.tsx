@@ -1,14 +1,39 @@
+import { memo } from "react";
 import { FileText, Download } from "lucide-react";
+
+import { PDFFileWithPages } from "@/utils/pdfMerger";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PDFFileWithPages } from "@/utils/pdfMerger";
 import PDFPreview from "./PDFPreview";
 
-type MergedPDFPreviewProps = {
+type MergedPDF = {
   mergedFile: { previewUrl: string } & PDFFileWithPages;
+};
+
+type MergedPDFPreviewProps = {
   onNameChange: (name: string) => void;
   onDownload: () => void;
-};
+} & MergedPDF;
+
+const Preview = memo(({ mergedFile }: MergedPDF) => (
+  <>
+    <h3 id="merged-pdf-preview" className="text-sm sm:text-base text-white font-bold text-center">
+      Preview
+    </h3>
+    <iframe
+      src={mergedFile.previewUrl}
+      className="w-full hidden sm:block h-[400px] sm:h-[600px] border-0 rounded-lg"
+      title="Preview of merged PDF"
+    />
+    <div className="block sm:hidden h-[400px] overflow-y-scroll w-full p-4 bg-zinc-600 space-y-4 rounded-lg scroll-thin">
+      {Array.from({ length: mergedFile.pages }).map((_, index) => (
+        <PDFPreview key={index} file={mergedFile.file} pageNumber={index} scaleFactor={2} />
+      ))}
+    </div>
+  </>
+));
+Preview.displayName = "Preview";
 
 const MergedPDFPreview = ({ mergedFile, onNameChange, onDownload }: MergedPDFPreviewProps) => {
   if (!mergedFile.previewUrl) return null;
@@ -18,25 +43,25 @@ const MergedPDFPreview = ({ mergedFile, onNameChange, onDownload }: MergedPDFPre
 
   return (
     <div className="space-y-6">
-      <h3 id="merged-pdf-preview" className="text-sm sm:text-base text-white font-bold text-center">
-        Preview
-      </h3>
       {/* File Info */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 bg-blue-100 border border-blue-600 rounded-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-blue-100 border border-blue-600 rounded-lg">
         <div className="flex items-center gap-4">
           <div className="size-14 bg-blue-200 rounded-lg flex items-center justify-center">
             <FileText className="size-6 text-blue-600" />
           </div>
           <div className="space-y-2">
-            <div className="flex items-center gap-1 font-semibold">
+            <div className="max-w-fit flex items-center font-medium bg-white/90 border-none px-2 divide-x-2 divide-slate-400 shadow-none rounded-md">
               <Input
                 defaultValue={name || "merged-document"}
+                placeholder="file-name"
+                aria-label="File Name"
+                id="merged-file-name"
                 onChange={(e) => onNameChange(e.target.value)}
-                className="h-7 text-xs sm:text-sm text-zinc-800 font-medium bg-white/90 focus-visible:ring-1 focus-visible:ring-blue-600  border-none px-2 shadow-none max-w-fit"
+                className="h-7 text-xs sm:text-sm text-zinc-800 text-right placeholder:text-gray-400 transparent border-0 focus-visible:ring-0 rounded-none shadow-none focus-visible:[box-shadow:inset_0_-1px_0_#155dfc] inset-shadow-blue-600"
               />
-              <span className="text-xs sm:text-sm font-medium text-blue-800  flex-shrink-0">
+              <div className="text-xs sm:text-sm pl-1 font-medium text-slate-400 border-l-2 border-slate-450">
                 .pdf
-              </span>
+              </div>
             </div>
             <p className="text-xs sm:text-sm text-blue-800">
               {mergedFile.size} <span className="mx-1">•</span> {pages} page
@@ -55,19 +80,7 @@ const MergedPDFPreview = ({ mergedFile, onNameChange, onDownload }: MergedPDFPre
           Download
         </Button>
       </div>
-
-      {/* PDF mobile Preview */}
-      <div className="block sm:hidden h-[400px] overflow-y-scroll w-full p-4 bg-zinc-600 space-y-4 rounded-lg scroll-thin">
-        {Array.from({ length: mergedFile.pages }).map((_, index) => (
-          <PDFPreview key={index} file={mergedFile.file} pageNumber={index} scaleFactor={2} />
-        ))}
-      </div>
-      {/* PDF Preview */}
-      <iframe
-        src={mergedFile.previewUrl}
-        className="w-full hidden sm:block h-[400px] sm:h-[600px] border-0 rounded-lg"
-        title="Preview of merged PDF"
-      />
+      <Preview mergedFile={mergedFile} />
     </div>
   );
 };
