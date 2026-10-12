@@ -1,9 +1,46 @@
 import { useRef, useEffect, memo, useState } from "react";
-import { RenderTask } from "pdfjs-dist";
+import type { PDFDocumentProxy, RenderTask } from "pdfjs-dist";
 
 import "@/lib/pdfjs-worker-client"; // Import PDF.js worker configuration
 import { cn } from "@/lib/utils";
 
+/* -------------------------------------------------------------------------- */
+/* Module-level caches                                                         */
+/*                                                                             */
+/* 1. docCache: one PDFDocumentProxy per File object, shared across all pages. */
+/*    Avoids re-parsing the same multi-page PDF 16 times.                      */
+/*                                                                             */
+/* 2. bitmapCache: rendered ImageBitmap per (file, pageNumber, scaleFactor).   */
+/*    Avoids re-rendering the canvas on remount/re-render — the bitmap is      */
+/*    drawn to the canvas in a single synchronous `drawImage` call.            */
+/* -------------------------------------------------------------------------- */
+const docCache = new WeakMap<File, Promise<PDFDocumentProxy>>();
+
+function getPDFDocument(file: File): Promise<PDFDocumentProxy> {
+  const cached = docCache.get(file);
+  if (cached) return cached;
+
+  const promise = (async () => {
+    const pdfjsLib = await import("pdfjs-dist");
+    const arrayBuffer = await file.arrayBuffer();
+    return pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  })();
+
+  docCache.set(file, promise);
+  return promise;
+}
+
+type BitmapKey = string;
+const bitmapCache = new Map<BitmapKey, ImageBitmap>();
+
+function makeBitmapKey(file: File, pageNumber: number, scaleFactor: number): BitmapKey {
+  // File.name + File.size + File.lastModified creates a stable identity per file blob
+  return `${file.name}:${file.size}:${file.lastModified}:${pageNumber}:${scaleFactor}`;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Component                                                                   */
+/* -------------------------------------------------------------------------- */
 type PDFPreviewProps = {
   file: File;
   pageNumber: number;
@@ -46,6 +83,23 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
     const renderPage = async () => {
       if (!canvasRef.current || !containerRef.current || !isMounted || !isVisible) return;
 
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d", { alpha: false });
+      if (!context) return;
+
+      const bitmapKey = makeBitmapKey(file, pageNumber, scaleFactor);
+
+      // Fast path: if we have a cached bitmap, draw it immediately (sync)
+      const cachedBitmap = bitmapCache.get(bitmapKey);
+      if (cachedBitmap) {
+        canvas.width = cachedBitmap.width;
+        canvas.height = cachedBitmap.height;
+        context.drawImage(cachedBitmap, 0, 0);
+        setIsLoading(false);
+        return;
+      }
+
+      // Slow path: parse + render + cache
       try {
         setIsLoading(true);
         setError(null);
@@ -55,39 +109,38 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
           renderTaskRef.current.cancel();
         }
 
-        const pdfjsLib = await import("pdfjs-dist");
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const pdf = await getPDFDocument(file);
         const page = await pdf.getPage(pageNumber + 1);
 
         if (!isMounted) return;
 
-        // Get the original page dimensions
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d", { alpha: false }); // Optimize for PDF rendering
-
-        if (!context) return;
-
-        // Calculate the scale to fit the container width while maintaining aspect ratio
         const scaledViewport = page.getViewport({ scale: scaleFactor });
 
-        // Set canvas dimensions to match the scaled viewport
         canvas.height = scaledViewport.height;
         canvas.width = scaledViewport.width;
 
-        // Optimize canvas rendering
         context.imageSmoothingEnabled = true;
         context.imageSmoothingQuality = "high";
 
-        // Store the render task
         renderTaskRef.current = page.render({
           canvasContext: context,
           viewport: scaledViewport,
           transform: [1, 0, 0, 1, 0, 0],
-          intent: "display", // Optimize for screen display
+          intent: "display",
         });
 
         await renderTaskRef.current.promise;
+
+        if (!isMounted) return;
+
+        // Cache the rendered bitmap for instant reuse
+        try {
+          const bitmap = await createImageBitmap(canvas);
+          bitmapCache.set(bitmapKey, bitmap);
+        } catch {
+          // createImageBitmap may fail in some environments; no-op
+        }
+
         setIsLoading(false);
       } catch (error) {
         if (!isMounted) return;
