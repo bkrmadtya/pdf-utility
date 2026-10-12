@@ -18,6 +18,7 @@ const DEFAULT_MERGED_FILE: MergedFile = {
   pages: 0,
   id: "",
   selectedPages: [],
+  pageRotations: {},
 };
 
 const scrollIntoView = (
@@ -40,6 +41,7 @@ export const usePDFMerger = () => {
   const [files, setFiles] = useState<PDFFileWithPages[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [mergedFile, setMergedFile] = useState(DEFAULT_MERGED_FILE);
+  const [uniformWidth, setUniformWidth] = useState(true);
 
   const removeFile = useCallback((id: string) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
@@ -87,6 +89,7 @@ export const usePDFMerger = () => {
           pages: pdf.getPageCount(),
           selectedPages: pdf.getPageIndices(),
           size: formatFileSize(arrayBuffer.byteLength),
+          pageRotations: {}, // User-applied rotations start at 0; inherent rotation is preserved in the PDF
         };
 
         newFiles.push(newFile);
@@ -105,7 +108,7 @@ export const usePDFMerger = () => {
     setIsProcessing(true);
 
     try {
-      const mergedPdf = await mergePDFs(files);
+      const mergedPdf = await mergePDFs(files, { uniformWidth });
       const pdf = await PDFDocument.load(mergedPdf);
 
       const blob = new Blob([mergedPdf], { type: "application/pdf" });
@@ -119,6 +122,7 @@ export const usePDFMerger = () => {
         pages: pdf.getPageCount(),
         id: generateRandomId(),
         selectedPages: pdf.getPageIndices(),
+        pageRotations: {},
       });
     } catch (error) {
       console.error("Error:", error);
@@ -167,10 +171,34 @@ export const usePDFMerger = () => {
     });
   }, []);
 
+  const rotatePage = useCallback((fileId: string, pageNumber: number) => {
+    setFiles((prevFiles) =>
+      prevFiles.map((file) => {
+        if (file.id !== fileId) return file;
+        const currentRotation = file.pageRotations[pageNumber] ?? 0;
+        // Keep accumulating (0, 90, 180, 270, 360, 450...) so the CSS transform
+        // always animates forward. Consumers normalize with % 360 where needed.
+        const newRotation = currentRotation + 90;
+        return {
+          ...file,
+          pageRotations: {
+            ...file.pageRotations,
+            [pageNumber]: newRotation,
+          },
+        };
+      })
+    );
+  }, []);
+
+  const toggleUniformWidth = useCallback(() => {
+    setUniformWidth((prev) => !prev);
+  }, []);
+
   return {
     files,
     isProcessing,
     mergedFile,
+    uniformWidth,
     removeFile,
     clearAllFiles,
     handleFileSelection,
@@ -179,5 +207,7 @@ export const usePDFMerger = () => {
     setMergedFile,
     handlePageSelectionChange,
     reorderFiles,
+    rotatePage,
+    toggleUniformWidth,
   };
 };

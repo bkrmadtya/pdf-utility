@@ -10,6 +10,7 @@ const Component = () => {
     files,
     isProcessing,
     mergedFile,
+    uniformWidth,
     removeFile,
     clearAllFiles,
     handleFileSelection,
@@ -18,6 +19,8 @@ const Component = () => {
     setMergedFile,
     handlePageSelectionChange,
     reorderFiles,
+    rotatePage,
+    toggleUniformWidth,
   } = usePDFMerger();
 
   return (
@@ -31,6 +34,9 @@ const Component = () => {
         isProcessing={isProcessing}
         onPageSelectionChange={handlePageSelectionChange}
         onReorderFiles={reorderFiles}
+        onRotatePage={rotatePage}
+        uniformWidth={uniformWidth}
+        onToggleUniformWidth={toggleUniformWidth}
       />
       <MergedPDFPreview
         mergedFile={mergedFile}

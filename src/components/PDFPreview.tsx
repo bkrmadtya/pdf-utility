@@ -45,15 +45,17 @@ type PDFPreviewProps = {
   file: File;
   pageNumber: number;
   scaleFactor?: number;
+  className?: string;
 };
 
-const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProps) => {
+const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5, className }: PDFPreviewProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const renderTaskRef = useRef<RenderTask | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -95,6 +97,7 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
         canvas.width = cachedBitmap.width;
         canvas.height = cachedBitmap.height;
         context.drawImage(cachedBitmap, 0, 0);
+        setAspectRatio(cachedBitmap.width / cachedBitmap.height);
         setIsLoading(false);
         return;
       }
@@ -114,10 +117,14 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
 
         if (!isMounted) return;
 
+        // Get viewport - pdf.js automatically respects the page's /Rotate property
         const scaledViewport = page.getViewport({ scale: scaleFactor });
 
         canvas.height = scaledViewport.height;
         canvas.width = scaledViewport.width;
+
+        // Store aspect ratio for CSS sizing
+        setAspectRatio(scaledViewport.width / scaledViewport.height);
 
         context.imageSmoothingEnabled = true;
         context.imageSmoothingQuality = "high";
@@ -125,7 +132,6 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
         renderTaskRef.current = page.render({
           canvasContext: context,
           viewport: scaledViewport,
-          transform: [1, 0, 0, 1, 0, 0],
           intent: "display",
         });
 
@@ -170,8 +176,14 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
     };
   }, [file, pageNumber, isVisible, scaleFactor]);
 
+  // Determine if portrait or landscape based on aspect ratio
+  const isPortrait = aspectRatio !== null && aspectRatio < 1;
+
   return (
-    <figure ref={containerRef} className="w-full relative">
+    <figure
+      ref={containerRef}
+      className={cn("relative flex items-center justify-center w-full h-full", className)}
+    >
       {isLoading && (
         <div
           className="absolute size-full inset-0 flex items-center justify-center bg-gray-600"
@@ -191,10 +203,22 @@ const PDFPreview = memo(({ file, pageNumber, scaleFactor = 0.5 }: PDFPreviewProp
       )}
       <canvas
         ref={canvasRef}
-        className={cn(
-          "w-full h-auto rounded-xs bg-white opacity-100 transition-opacity duration-300",
-          { "opacity-0": isLoading }
-        )}
+        className={cn("rounded-xs bg-white transition-opacity duration-300 block", {
+          "opacity-0": isLoading,
+        })}
+        style={
+          aspectRatio !== null
+            ? {
+                // Use object-fit contain behavior via width/height constraints
+                // Portrait (tall): constrain by height, width follows aspect ratio
+                // Landscape (wide): constrain by width, height follows aspect ratio
+                ...(isPortrait
+                  ? { height: "100%", width: "auto", maxWidth: "100%" }
+                  : { width: "100%", height: "auto", maxHeight: "100%" }),
+                aspectRatio: String(aspectRatio),
+              }
+            : undefined
+        }
         aria-label={`PDF preview page ${pageNumber}`}
       />
     </figure>
