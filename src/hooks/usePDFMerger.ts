@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { PDFDocument } from "pdf-lib";
 import { formatFileSize } from "@/utils/format";
@@ -41,10 +41,10 @@ export const usePDFMerger = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [mergedFile, setMergedFile] = useState(DEFAULT_MERGED_FILE);
 
-  const removeFile = (id: string) => {
+  const removeFile = useCallback((id: string) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.id !== id));
     setMergedFile(DEFAULT_MERGED_FILE);
-  };
+  }, []);
 
   const clearAllFiles = () => {
     setFiles([]);
@@ -147,11 +147,25 @@ export const usePDFMerger = () => {
     toast.success("PDF downloaded successfully!");
   };
 
-  const handlePageSelectionChange = (fileId: string, selectedPages: number[]) => {
+  const handlePageSelectionChange = useCallback((fileId: string, selectedPages: number[]) => {
     setFiles((prevFiles) =>
       prevFiles.map((file) => (file.id === fileId ? { ...file, selectedPages } : file))
     );
-  };
+  }, []);
+
+  const reorderFiles = useCallback((activeId: string, overId: string) => {
+    setFiles((prevFiles) => {
+      const oldIndex = prevFiles.findIndex((file) => file.id === activeId);
+      const newIndex = prevFiles.findIndex((file) => file.id === overId);
+
+      if (oldIndex === -1 || newIndex === -1) return prevFiles;
+
+      const reordered = [...prevFiles];
+      const [moved] = reordered.splice(oldIndex, 1);
+      reordered.splice(newIndex, 0, moved);
+      return reordered;
+    });
+  }, []);
 
   return {
     files,
@@ -164,5 +178,6 @@ export const usePDFMerger = () => {
     handleDownload,
     setMergedFile,
     handlePageSelectionChange,
+    reorderFiles,
   };
 };

@@ -17,6 +17,7 @@ const Component = () => {
     handleDownload,
     setMergedFile,
     handlePageSelectionChange,
+    reorderFiles,
   } = usePDFMerger();
 
   return (
@@ -29,6 +30,7 @@ const Component = () => {
         onMerge={handleMerge}
         isProcessing={isProcessing}
         onPageSelectionChange={handlePageSelectionChange}
+        onReorderFiles={reorderFiles}
       />
       <MergedPDFPreview
         mergedFile={mergedFile}
